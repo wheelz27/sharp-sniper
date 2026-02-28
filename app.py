@@ -33,7 +33,7 @@ def run_intelligence_engine(sport_choice):
     """Triggers your existing MatchupAnalyzer pipeline"""
     analyzer = MatchupAnalyzer(sport=sport_choice.lower())
     # This runs the logic in your ratings.py and odds.py
-    edges = analyzer.run_daily_analysis() 
+    edges = analyzer.run() 
     return edges, analyzer
 
 # --- 3. HEADER & STRATEGY EXPLAINER ---
