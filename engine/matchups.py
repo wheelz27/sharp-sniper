@@ -1,17 +1,15 @@
 """
 Matchup Analyzer 
-Orchestrates all components: 
-  Data (stats + odds + injuries) → Ratings → Edge → Output
-
-This is the main pipeline you run daily.
+Orchestrates all components: Data → Ratings → Edge → Output
 """
 from typing import Dict, List, Optional
 from dataclasses import dataclass
-
 import sys, os
-# This ensures the engine can see the 'data' folder
+
+# This ensures the engine can see the 'data' and 'engine' folders
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
+# FOLDER-AWARE IMPORTS
 from data.nba_stats import NBAStatsClient
 from data.ncaab_stats import NCAABStatsClient
 from data.odds import OddsClient, GameOdds
@@ -44,7 +42,6 @@ class MatchupAnalyzer:
         self.odds_client = OddsClient()
         self.injury_tracker = InjuryTracker()
 
-        # Sport-specific data client
         if sport == "nba":
             self.stats_client = NBAStatsClient(season=season)
         else:
@@ -71,17 +68,14 @@ class MatchupAnalyzer:
         self._games = self.odds_client.get_odds(self.sport)
 
     def compute_all_edges(self, max_plays: int = 5) -> List[EdgeResult]:
-        """
-        The main 'Handshake' function called by app.py.
-        Refreshes data and calculates all market edges.
-        """
+        """The 'Handshake' function called by app.py"""
         self.refresh_data()
         all_edges = []
 
         for game in self._games:
             away_abbr = self._resolve_team_abbr(game.away_team)
             home_abbr = self._resolve_team_abbr(game.home_team)
-
+            
             away_rating = self._ratings.get(away_abbr)
             home_rating = self._ratings.get(home_abbr)
 
@@ -98,7 +92,7 @@ class MatchupAnalyzer:
             )
             model_total = self.rating_engine.compute_model_total(home_rating, away_rating)
 
-            # Compute edge using the EdgeCalculator
+            # Compute the final edge
             edge = self.edge_calc.compute_edge(
                 away_rating=away_rating,
                 home_rating=home_rating,
