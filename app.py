@@ -1,89 +1,84 @@
 import streamlit as st
 
-# --- 1. CLUBROOM WHITE THEME ---
-st.set_page_config(page_title="EDGEINTEL | PRO", layout="wide")
+# --- 1. 2026 CLUBROOM CONTRAST THEME ---
+st.set_page_config(page_title="EDGEINTEL | SYNDICATE", layout="wide")
 
 st.markdown("""
 <style>
-    .stApp { background-color: #FFFFFF !important; color: #1A1A1A !important; }
+    .stApp { background-color: #0D1117 !important; color: #E6E8EE !important; }
     .whale-card {
-        background: #F8F9FA; border: 1px solid #E9ECEF;
-        border-top: 5px solid #007A7C; border-radius: 12px;
-        padding: 25px; margin-bottom: 25px;
+        background: linear-gradient(135deg, #161B22 0%, #2E1A47 100%);
+        border: 1px solid #30363D; border-left: 5px solid #00F5D4;
+        border-radius: 12px; padding: 25px; margin-bottom: 25px;
     }
     .sport-header {
-        font-size: 1.2rem; font-weight: 800; color: #2E1A47;
-        border-bottom: 2px solid #E9ECEF; padding-bottom: 5px; margin-bottom: 15px;
+        font-size: 0.9rem; font-weight: 800; color: #00F5D4;
+        letter-spacing: 2px; text-transform: uppercase;
+        border-bottom: 1px solid #30363D; padding-bottom: 8px; margin: 30px 0 15px 0;
     }
-    .prop-box {
-        background: #E6F2F2; color: #004D4D; padding: 4px 10px;
-        border-radius: 6px; font-weight: 700; font-size: 0.85rem;
+    .game-card {
+        background: #161B22; border: 1px solid #30363D;
+        border-radius: 10px; padding: 20px; height: 100%;
     }
-    .spread-text { color: #007A7C; font-weight: 900; }
+    .sharp-teal { color: #00F5D4; font-weight: 800; }
+    .prop-badge {
+        background: rgba(0, 245, 212, 0.1); color: #00F5D4;
+        padding: 4px 10px; border-radius: 5px; font-size: 0.8rem; font-weight: 700;
+        border: 1px solid rgba(0, 245, 212, 0.3);
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. MASTER DATA (SUNDAY, MARCH 1, 2026) ---
-# Data reflects current March 1, 2026 spreads and sharp player props
+# --- 2. DATA LOAD ---
 master_data = {
     "NBA": [
-        {"game": "76ers @ Celtics", "spread": "BOS -9.5", "prop": "J. Brown O 6.5 Rebounds", "intel": "Tatum (Achilles) OUT. Philly no Embiid. Brown averaging 29.1 PPG solo."},
-        {"game": "Kings @ Lakers", "spread": "LAL -13.0", "prop": "Luka O 3.5 3PM", "intel": "Luka/LeBron active. Kings missing Sabonis. Lakers transition rating is #1 West."},
-        {"game": "Bucks @ Bulls", "spread": "CHI +2.5", "prop": "M. Buzelis O 18.5 PTS", "intel": "Giannis (Calf) OUT. MIL Off-Rating drops 11.4 points. Bulls at home edge."}
-    ],
-    "NHL": [
-        {"game": "Panthers @ Islanders", "spread": "FLA -1.5", "prop": "S. Reinhart Anytime Goal", "intel": "NYI 1-7 after Olympic break. Florida returns 100% healthy. Huge xG edge."},
-        {"game": "Flames @ Ducks", "spread": "ANA -1.5", "prop": "B. Sennecke 1+ Point", "intel": "Ducks won 4 straight. Calgary on back-to-back. Anaheim 7-0 at home recently."},
-        {"game": "Golden Knights @ Pens", "spread": "VGK -1.5", "prop": "M. Stone O 2.5 Shots", "intel": "Crosby (Lower Body) OUT. Vegas Power Play is top-5 vs Pens struggling PK."}
+        {"game": "76ers @ Celtics", "spread": "BOS -9.5", "prop": "J. Brown O 28.5 PTS", "intel": "No Embiid for Philly. Brown usage spikes 12% without Tatum (Achilles rest)."},
+        {"game": "Kings @ Lakers", "spread": "LAL -13.0", "prop": "Luka O 10.5 AST", "intel": "Kings transition defense is bottom-3. Luka pace-up spot is elite tonight."},
+        {"game": "Bucks @ Bulls", "spread": "CHI +2.5", "prop": "M. Buzelis O 1.5 BLK", "intel": "Giannis OUT. Buzelis protecting paint against a smaller Bucks rotation."}
     ],
     "TENNIS": [
-        {"game": "Kyrgios vs Bublik", "spread": "KYR ML", "prop": "Kyrgios O 12.5 Aces", "intel": "MGM Slam Vegas. Nick's serve speed 134mph in warmups. Bublik high DF risk."},
-        {"game": "IW: Golubic vs Stakusic", "spread": "GOL -3.5", "prop": "Under 21.5 Games", "intel": "Indian Wells Qualies. Courts 4% slower than 2025. Defensive grinders win today."},
-        {"game": "ATP Santiago: Darderi vs Hanfmann", "spread": "DAR -115", "prop": "Darderi 2-0 Sets", "intel": "High altitude favors Darderi's topspin. Hanfmann struggled in 3-set semi."}
+        {"game": "MGM Slam: Kyrgios/Bublik", "spread": "KYR ML", "prop": "O 24.5 Aces", "intel": "Vegas Indoor. Fast conditions. Both serving over 130mph in warmups."},
+        {"game": "IW: Golubic vs Stakusic", "spread": "GOL -3.5", "prop": "U 20.5 Games", "intel": "Indian Wells sensors show 4% slower court speed today. Grinders edge."},
+        {"game": "ATP Santiago Final", "spread": "DAR -115", "prop": "Darderi 2-0 Sets", "intel": "High altitude favors Darderi's topspin kick-serve over Hanfmann."}
     ],
-    "MLS": [
-        {"game": "Orlando @ Miami", "spread": "MIA -115", "prop": "Messi O 1.5 SOT", "intel": "Florida Derby. Messi/Suarez starting. Orlando missing CB Jansson. Miami xG +1.8."},
-        {"game": "San Diego FC @ St. Louis", "spread": "SDFC -190", "prop": "Chucky Lozano Assist", "intel": "SDFC dominant in attacking volume. St. Louis allowed 11 SOT in the opener."},
-        {"game": "Austin @ DC United", "spread": "AUS -110", "prop": "O 2.5 Goals", "intel": "Both teams high-press, low defensive transition. DC United missing starting GK."}
+    "NHL": [
+        {"game": "Panthers @ Islanders", "spread": "FLA -1.5", "prop": "Barkov 1+ Point", "intel": "NYI 1-7 immediately after Olympic breaks. Florida is 100% healthy."},
+        {"game": "Flames @ Ducks", "spread": "ANA -1.5", "prop": "Zegras O 2.5 SOG", "intel": "Ducks PP at 28%. Calgary defense on a back-to-back road leg."},
+        {"game": "Knights @ Penguins", "spread": "VGK ML", "prop": "Eichel O 0.5 AST", "intel": "Crosby OUT. Vegas top line expected to dominate puck possession."}
     ]
 }
 
-# --- 3. TOP SYNDICATE "WHALE" PLAY ---
+# --- 3. PERSISTENCE LOGIC (This fixes the 'Intel' button) ---
+if 'active_game' not in st.session_state:
+    st.session_state.active_game = None
+if 'active_intel' not in st.session_state:
+    st.session_state.active_intel = None
+
+def set_intel(game, intel):
+    st.session_state.active_game = game
+    st.session_state.active_intel = intel
+
+# --- 4. TOP WHALE PLAY ---
+st.title("🏛️ EDGEINTEL SYNDICATE")
 st.markdown("""<div class="whale-card">
-    <div style="color: #007A7C; font-weight: 800; font-size: 0.75rem; letter-spacing: 2px;">🚨 SUNDAY MAX UNIT</div>
-    <h2 style="margin: 5px 0; color: #2E1A47;">PHILADELPHIA @ BOSTON (NBA)</h2>
-    <p style="font-size: 1.1rem; margin: 0;"><b>SPREAD: <span class="spread-text">CELTICS -9.5</span></b> | <b>PROP: <span class="prop-box">J. BROWN OVER 6.5 REB</span></b></p>
-    <p style="color: #666; font-size: 0.85rem; margin-top: 10px;">Model shows 88% blowout probability. Philly missing 42% scoring volume without Embiid.</p>
+    <div style="color: #00F5D4; font-weight: 800; font-size: 0.75rem; letter-spacing: 2px;">🚨 MAX UNIT SYNDICATE PLAY</div>
+    <h2 style="margin: 10px 0;">NBA: PHILADELPHIA @ BOSTON</h2>
+    <p style="font-size: 1.1rem; margin: 0;"><b>SPREAD: <span class="sharp-teal">CELTICS -9.5</span></b> | <b>PROP: <span class="prop-badge">J. BROWN OVER 28.5 PTS</span></b></p>
 </div>""", unsafe_allow_html=True)
 
-# --- 4. THE GLOBAL BOARD (TOP 3 PER SPORT) ---
-st.subheader("📡 GLOBAL RADAR OVERVIEW")
-
+# --- 5. GLOBAL BOARD ---
 for sport, games in master_data.items():
-    st.markdown(f'<div class="sport-header">{sport} TOP 3 SLATE</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="sport-header">📡 TOP 3 {sport} SLATE</div>', unsafe_allow_html=True)
     cols = st.columns(3)
-    for i, game in enumerate(games):
+    for i, g in enumerate(games):
         with cols[i]:
-            st.markdown(f"**{game['game']}**")
-            st.markdown(f"Spread: <span class='spread-text'>{game['spread']}</span>", unsafe_allow_html=True)
-            st.markdown(f"<span class='prop-box'>🔥 PROP: {game['prop']}</span>", unsafe_allow_html=True)
-            if st.button(f"SCAN INTEL", key=f"btn_{sport}_{i}"):
-                st.session_state.active_game = game['game']
-                st.session_state.active_intel = game['intel']
-    st.divider()
-
-# --- 5. NEURAL LINK (AI CHAT) ---
-if "active_game" in st.session_state:
-    st.subheader(f"🧠 NEURAL LINK: {st.session_state.active_game}")
-    st.info(f"**SYNDICATE SCAN:** {st.session_state.active_intel}")
-    
-    query = st.text_input("Interrogate this matchup:", placeholder="e.g. 'How does the Tatum injury impact the first quarter line?'")
-    if query:
-        with st.spinner("Analyzing Neural Feed..."):
-            st.markdown(f"""<div style="background:#F0F4F4; border-left:4px solid #007A7C; padding:15px; border-radius:8px;">
-                <b>SYNDICATE AI:</b> For <i>{st.session_state.active_game}</i>, the factor <i>"{query}"</i> is crucial. 
-                Our 2026 data indicates the <b>bench depth disparity</b> is the sharpest angle here. 
-                We recommend targeting <b>Celtics -3.5 1Q</b> or <b>Lakers 1H Overs</b> based on recent transition metrics.
+            st.markdown(f"""<div class="game-card">
+                <div style="font-weight:700; margin-bottom:8px;">{g['game']}</div>
+                <div style="margin-bottom:10px;">Spread: <span class="sharp-teal">{g['spread']}</span></div>
+                <div style="margin-bottom:12px;"><span class="prop-badge">🔥 {g['prop']}</span></div>
             </div>""", unsafe_allow_html=True)
+            # Use on_click callback to ensure the data sticks
+            st.button("SCAN INTEL", key=f"btn_{sport}_{i}", on_click=set_intel, args=(g['game'], g['intel']))
 
-st.link_button("🚀 UNLOCK FULL SYNDICATE ACCESS", "https://whop.com/YOUR_LINK", use_container_width=True)
+# --- 6. NEURAL LINK (AI INTERROGATION) ---
+if st.session_state.active_game:
