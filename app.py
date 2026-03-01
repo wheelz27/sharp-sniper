@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from datetime import datetime
 
@@ -5,6 +6,25 @@ from datetime import datetime
 # CONFIG
 # ============================================================
 st.set_page_config(page_title="EDGEINTEL | Control Panel", layout="wide")
+
+# ============================================================
+# OPTIONAL PASSCODE GATE (NO SIGNUP)
+# - If DEMO_PASS is NOT set: app is open to anyone with the URL
+# - If DEMO_PASS is set: viewers must enter passcode
+# ============================================================
+DEMO_PASS = os.getenv("DEMO_PASS", "").strip()
+if DEMO_PASS:
+    if "access_ok" not in st.session_state:
+        st.session_state.access_ok = False
+
+    if not st.session_state.access_ok:
+        st.markdown("## 🔒 Access Required")
+        st.caption("Enter the access code. No account needed.")
+        code = st.text_input("Access code", type="password")
+        if st.button("Enter"):
+            st.session_state.access_ok = (code.strip() == DEMO_PASS)
+        if not st.session_state.access_ok:
+            st.stop()
 
 # ============================================================
 # THEME (dark SaaS)
@@ -114,11 +134,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ============================================================
-# PICKS DATA (clean, realistic placeholders — NO "Fighter A vs B")
-# Replace later with your real model output.
+# PICKS DATA (clean placeholders — replace later with real feed)
 # ============================================================
 PICKS = [
-    # NBA
     {"sport":"NBA", "icon":"🏀", "game":"76ers @ Celtics", "market":"Spread", "pick":"BOS -9.5", "odds":"-110", "book":"FD",
      "confidence":78,
      "why":["Usage consolidates toward BOS creators","Bench mismatch drives margin","Pace supports separation"],
@@ -137,7 +155,6 @@ PICKS = [
      "risk":["Foul trouble","Opponent goes 5-out"],
      "execution":"Prefer plus money. If it goes -130, pass."},
 
-    # NHL
     {"sport":"NHL", "icon":"🏒", "game":"Knights @ Penguins", "market":"Player Shots", "pick":"Eichel O 2.5 SOG", "odds":"-120", "book":"DK",
      "confidence":80,
      "why":["Shot attempt rate","O-zone time projection","Matchup advantage"],
@@ -150,13 +167,6 @@ PICKS = [
      "risk":["Low-event game","Goalie steal"],
      "execution":"Take -135 to -150. Avoid -170+."},
 
-    {"sport":"NHL", "icon":"🏒", "game":"Flames @ Ducks", "market":"Player Point", "pick":"McTavish O 0.5 PTS", "odds":"-110", "book":"MGM",
-     "confidence":67,
-     "why":["Home form trend","Chance creation volume","Usage"],
-     "risk":["Points prop randomness"],
-     "execution":"Take -110 to -125. Pass at -140+."},
-
-    # MMA/UFC (use “Main Event / Co-Main” style to avoid fake fighter names)
     {"sport":"MMA / UFC", "icon":"🥊", "game":"UFC Main Event", "market":"Rounds", "pick":"Over 1.5 Rounds", "odds":"-140", "book":"MGM",
      "confidence":70,
      "why":["Clinch/grappling time projection","Early finish paths suppressed","Pace projects longer"],
@@ -168,34 +178,23 @@ PICKS = [
      "why":["Cardio edge late","Control time path exists","Scorecard-friendly style"],
      "risk":["Judges variability","Early knockdown flips"],
      "execution":"Small size only. High variance prop."},
-
-    {"sport":"MMA / UFC", "icon":"🥊", "game":"UFC Featured Bout", "market":"Method of Victory", "pick":"Favorite by KO/TKO", "odds":"+155", "book":"DK",
-     "confidence":63,
-     "why":["Power differential","Defense leakage","Distance control"],
-     "risk":["Wrestling surprise path","Cardio dump"],
-     "execution":"Small size. Only if +140 or better."},
 ]
 
 # ============================================================
 # STATE
 # ============================================================
-if "page" not in st.session_state:
-    st.session_state.page = "Account"
 if "selected" not in st.session_state:
     st.session_state.selected = None
 if "chat" not in st.session_state:
     st.session_state.chat = []
 
 def score(p):
-    # Simple ranking now (confidence).
-    # Later: edge * confidence * liquidity, etc.
     return p.get("confidence", 0)
 
-def top_3_picks():
+def top3():
     return sorted(PICKS, key=lambda x: score(x), reverse=True)[:3]
 
 def forced_one_per_game():
-    # If multiple markets per game appear later, keep highest confidence per game.
     by_game = {}
     for p in PICKS:
         g = p["game"]
@@ -238,39 +237,38 @@ def scotty_answer(p, q):
 """.strip()
 
 # ============================================================
-# SIDEBAR NAV (kept simple)
+# SIDEBAR
 # ============================================================
 with st.sidebar:
     st.markdown("### EDGEINTEL")
-    st.caption("Control Panel")
-
-    nav = st.radio("Navigation", ["Account", "Webhooks", "Docs", "Log Out"],
-                   index=["Account","Webhooks","Docs","Log Out"].index(st.session_state.page),
-                   label_visibility="collapsed")
-    st.session_state.page = nav
+    st.caption("Send the URL. No signup required.")
+    if DEMO_PASS:
+        st.info("Passcode gate is ON (DEMO_PASS set).")
+    else:
+        st.success("Open link (no passcode).")
 
     st.divider()
-    st.caption("Click any pick on the left → details load on the right.")
+    st.caption("Click any pick on the left → it loads on the right.")
 
 # ============================================================
-# TOPBAR (one subtle badge instead of DEMO spam)
+# TOPBAR
 # ============================================================
 stamp = datetime.now().strftime("%b %d, %Y • %I:%M %p")
 st.markdown(f"""
 <div class="topbar">
   <div class="title">Account <span class="pill" style="margin-left:8px;">Simulated Data</span></div>
-  <div class="subtitle">Top Picks • Full Slate • Dossier • AI Q&A • Updated {stamp}</div>
+  <div class="subtitle">Top 3 Picks • Full Slate • Dossier • AI Q&A • Updated {stamp}</div>
 </div>
 """, unsafe_allow_html=True)
 
 # ============================================================
-# LAYOUT: LEFT (Top 3 + Full Slate) | RIGHT (Dossier + AI)
+# LAYOUT
 # ============================================================
 left, right = st.columns([1.22, 1.0], gap="large")
 
 with left:
     st.markdown("#### 🔥 Top 3 Picks of the Day")
-    for idx, p in enumerate(top_3_picks(), start=1):
+    for idx, p in enumerate(top3(), start=1):
         rowA, rowB = st.columns([0.78, 0.22])
         with rowA:
             st.markdown(f"""
@@ -284,14 +282,14 @@ with left:
                   </div>
                 </div>
               </div>
-              <div class="rowRight"><span class="badge">TOP</span></div>
+              <div><span class="badge">TOP</span></div>
             </div>
             """, unsafe_allow_html=True)
         with rowB:
             if st.button("Open", key=f"top_open_{idx}"):
                 set_selected(p)
 
-    st.markdown("#### 📋 Full Slate (Forced Pick per Game)")
+    st.markdown("#### 📋 Full Slate (One Pick per Game)")
     for p in forced_one_per_game():
         rowA, rowB = st.columns([0.78, 0.22])
         with rowA:
@@ -306,7 +304,7 @@ with left:
                   </div>
                 </div>
               </div>
-              <div class="rowRight"><span class="pill">FREE</span></div>
+              <div><span class="pill">FREE</span></div>
             </div>
             """, unsafe_allow_html=True)
         with rowB:
@@ -315,10 +313,9 @@ with left:
 
 with right:
     st.markdown('<div class="detail">', unsafe_allow_html=True)
-
     if not st.session_state.selected:
         st.markdown("### Pick Dossier")
-        st.info("Click **Open** on any pick (left). This panel will load the full analysis + AI Q&A.")
+        st.info("Click **Open** on any pick (left). This panel will load full analysis + AI Q&A.")
         st.markdown("</div>", unsafe_allow_html=True)
     else:
         p = st.session_state.selected
@@ -377,4 +374,4 @@ with right:
         st.markdown("</div>", unsafe_allow_html=True)
 
 st.divider()
-st.link_button("🚀 UNLOCK FULL SYNDICATE ACCESS", "https://whop.com/YOUR_LINK", use_container_width=True)
+st.caption("Note: picks shown use simulated inputs until live odds/news feeds are connected.")
