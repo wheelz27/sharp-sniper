@@ -29,56 +29,17 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. DATA LOAD ---
+# --- 2. LIVE MARCH 1, 2026 DATA ---
 master_data = {
     "NBA": [
-        {"game": "76ers @ Celtics", "spread": "BOS -9.5", "prop": "J. Brown O 28.5 PTS", "intel": "No Embiid for Philly. Brown usage spikes 12% without Tatum (Achilles rest)."},
-        {"game": "Kings @ Lakers", "spread": "LAL -13.0", "prop": "Luka O 10.5 AST", "intel": "Kings transition defense is bottom-3. Luka pace-up spot is elite tonight."},
-        {"game": "Bucks @ Bulls", "spread": "CHI +2.5", "prop": "M. Buzelis O 1.5 BLK", "intel": "Giannis OUT. Buzelis protecting paint against a smaller Bucks rotation."}
-    ],
-    "TENNIS": [
-        {"game": "MGM Slam: Kyrgios/Bublik", "spread": "KYR ML", "prop": "O 24.5 Aces", "intel": "Vegas Indoor. Fast conditions. Both serving over 130mph in warmups."},
-        {"game": "IW: Golubic vs Stakusic", "spread": "GOL -3.5", "prop": "U 20.5 Games", "intel": "Indian Wells sensors show 4% slower court speed today. Grinders edge."},
-        {"game": "ATP Santiago Final", "spread": "DAR -115", "prop": "Darderi 2-0 Sets", "intel": "High altitude favors Darderi's topspin kick-serve over Hanfmann."}
+        {"game": "Knicks @ Spurs", "spread": "SAS -1.5", "prop": "Wemby O 4.5 BLK", "intel": "Potential Finals preview. Both healthy. Knicks won last 2 matchups, but Spurs at home are 43-16."},
+        {"game": "76ers @ Celtics", "spread": "BOS -9.5", "prop": "J. Brown O 29.5 PTS", "intel": "Embiid (Oblique) OUT. Tatum (Achilles) OUT. Brown usage spikes 12% as the solo engine."},
+        {"game": "Kings @ Lakers", "spread": "LAL -13.0", "prop": "Luka O 11.5 AST", "intel": "Luka/LeBron active. Kings tanking (14-47). Lakers' transition efficiency is elite tonight."}
     ],
     "NHL": [
-        {"game": "Panthers @ Islanders", "spread": "FLA -1.5", "prop": "Barkov 1+ Point", "intel": "NYI 1-7 immediately after Olympic breaks. Florida is 100% healthy."},
-        {"game": "Flames @ Ducks", "spread": "ANA -1.5", "prop": "Zegras O 2.5 SOG", "intel": "Ducks PP at 28%. Calgary defense on a back-to-back road leg."},
-        {"game": "Knights @ Penguins", "spread": "VGK ML", "prop": "Eichel O 0.5 AST", "intel": "Crosby OUT. Vegas top line expected to dominate puck possession."}
-    ]
-}
-
-# --- 3. PERSISTENCE LOGIC (This fixes the 'Intel' button) ---
-if 'active_game' not in st.session_state:
-    st.session_state.active_game = None
-if 'active_intel' not in st.session_state:
-    st.session_state.active_intel = None
-
-def set_intel(game, intel):
-    st.session_state.active_game = game
-    st.session_state.active_intel = intel
-
-# --- 4. TOP WHALE PLAY ---
-st.title("🏛️ EDGEINTEL SYNDICATE")
-st.markdown("""<div class="whale-card">
-    <div style="color: #00F5D4; font-weight: 800; font-size: 0.75rem; letter-spacing: 2px;">🚨 MAX UNIT SYNDICATE PLAY</div>
-    <h2 style="margin: 10px 0;">NBA: PHILADELPHIA @ BOSTON</h2>
-    <p style="font-size: 1.1rem; margin: 0;"><b>SPREAD: <span class="sharp-teal">CELTICS -9.5</span></b> | <b>PROP: <span class="prop-badge">J. BROWN OVER 28.5 PTS</span></b></p>
-</div>""", unsafe_allow_html=True)
-
-# --- 5. GLOBAL BOARD ---
-for sport, games in master_data.items():
-    st.markdown(f'<div class="sport-header">📡 TOP 3 {sport} SLATE</div>', unsafe_allow_html=True)
-    cols = st.columns(3)
-    for i, g in enumerate(games):
-        with cols[i]:
-            st.markdown(f"""<div class="game-card">
-                <div style="font-weight:700; margin-bottom:8px;">{g['game']}</div>
-                <div style="margin-bottom:10px;">Spread: <span class="sharp-teal">{g['spread']}</span></div>
-                <div style="margin-bottom:12px;"><span class="prop-badge">🔥 {g['prop']}</span></div>
-            </div>""", unsafe_allow_html=True)
-            # Use on_click callback to ensure the data sticks
-            st.button("SCAN INTEL", key=f"btn_{sport}_{i}", on_click=set_intel, args=(g['game'], g['intel']))
-
-# --- 6. NEURAL LINK (AI INTERROGATION) ---
-if st.session_state.active_game:
+        {"game": "Panthers @ Islanders", "spread": "FLA -145", "prop": "Barkov 1+ Point", "intel": "NYI 1-7 immediately after Olympic breaks. Florida 100% healthy; massive xG edge."},
+        {"game": "Flames @ Ducks", "spread": "ANA -1.5", "prop": "McTavish O 0.5 PTS", "intel": "Ducks won 4 straight. Calgary on back-to-back road leg. McTavish 72% hit rate at home."},
+        {"game": "Blackhawks @ Mammoth", "spread": "UTA -310", "prop": "L. Cooley Goal", "intel": "Utah Mammoth (69% win prob). Cooley returned from injury with goals in 2 straight games."}
+    ],
+    "TENNIS": [
+        {"game": "MGM Slam: Kyrgios/Bublik", "
