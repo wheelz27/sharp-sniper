@@ -1,81 +1,91 @@
 import streamlit as st
 
-# --- 1. 2026 CLUBROOM CONTRAST THEME ---
-st.set_page_config(page_title="EDGEINTEL | PRO", layout="wide")
+# --- 1. PRO-TIER DESIGN (ONYX & ELECTRIC CYAN) ---
+st.set_page_config(page_title="EDGEINTEL | NEURAL", layout="wide")
 
 st.markdown("""
 <style>
-    .stApp { background-color: #0A0C10 !important; color: #E9EEF5 !important; }
-    
-    /* Syndicate Whale Card */
+    .stApp { background-color: #05070A !important; color: #E9EEF5 !important; }
     .whale-card {
-        background: linear-gradient(145deg, #161B22, #0A0C10);
-        border: 1px solid #1f242d;
-        border-left: 4px solid #40E0FF;
-        border-radius: 8px; padding: 25px; margin-bottom: 35px;
+        background: linear-gradient(145deg, #161B22, #05070A);
+        border: 1px solid #1f242d; border-left: 4px solid #40E0FF;
+        border-radius: 8px; padding: 25px; margin-bottom: 20px;
     }
-
-    /* Sport Headers */
-    .sport-header {
-        background-color: #161B22; border-left: 3px solid #40E0FF;
-        padding: 8px 15px; margin: 25px 0 10px 0;
-        font-weight: 700; color: #40E0FF;
-        text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1.5px;
+    .sport-section {
+        background-color: #0D1117; border-radius: 8px;
+        padding: 15px; margin-bottom: 20px; border: 1px solid #1f242d;
     }
-
-    .sharp-blue { color: #40E0FF; font-weight: 700; }
-    .muted-intel { color: #9BA3AF; font-size: 0.9rem; line-height: 1.5; }
+    .sharp-cyan { color: #40E0FF; font-weight: bold; }
+    .ai-chat-box {
+        background-color: #161B22; border: 1px solid #40E0FF;
+        border-radius: 8px; padding: 15px; margin-top: 10px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. MASTER SYNDICATE DATA (LIVE MARCH 1, 2026) ---
+# --- 2. THE DATA (SUNDAY, MARCH 1, 2026) ---
 master_data = {
-    "NBA: 76ers @ Celtics": {"status": "8:00 PM ET", "edge": "BOS -9.5", "intel": "Joel Embiid (Oblique) is officially OUT. Celtics missing Tatum (Achilles), but Jaylen Brown is averaging 29.1 PPG as the solo engine. Boston’s bench is #2 in Net Rating; Philly’s is bottom-5. Lay the points."},
-    "NBA: Bucks @ Bulls": {"status": "LIVE (Q4)", "edge": "CHI +6.5", "intel": "Giannis (Calf) is OUT. MIL offensive rating drops 11.4 points without him. Bulls keeping it close at 74-76. Sharp money is on the Bulls spread to hold at home."},
-    "NBA: Kings @ Lakers": {"status": "9:30 PM ET", "edge": "LAL -13.0", "intel": "Luka Doncic and LeBron James (Foot Management) both ACTIVE. Kings are missing Sabonis and Zach LaVine. Absolute mismatch in transition volume. Lakers blowout expected."},
-    "NHL: Panthers @ Islanders": {"status": "6:30 PM ET", "edge": "FLA ML", "intel": "NYI are 1-7 in home openers following long breaks (Olympic rest). Florida returns 100% healthy with Kulikov back. Huge edge in expected goals (xG)."},
-    "MLS: Orlando @ Miami": {"status": "7:00 PM ET", "edge": "MIA ML", "intel": "The Florida Derby. Messi and Suarez are starting. Miami seeking their first goal of 2026 after the LAFC shutout. Orlando missing key CB Jansson."},
-    "CBB: #8 Purdue @ Ohio State": {"status": "FINAL", "edge": "PURDUE -6.5", "intel": "WIN. Purdue survived the Buckeyes 76-74. While they didn't cover the full 6.5, the moneyline 'Whale' play hit for the Syndicate."}
+    "NBA": {
+        "76ers @ Celtics": {"edge": "BOS -9.5", "intel": "Tatum (Achilles) OUT. Jaylen Brown averaging 29.1 PPG. Philly missing Embiid/George. Boston bench #2 Net Rating."},
+        "Knicks @ Spurs": {"edge": "OVER 227.5", "intel": "Wembanyama vs Brunson. 6/7 recent matchups eclipsed 230 points. Both teams healthy; high pace expected at MSG."},
+        "Wolves @ Nuggets": {"edge": "DEN -2.5", "intel": "Denver seeking 4-game sweep. Jokic (26.3 PPG) vs Edwards (28.1 PPG). Over hits in 60% of simulations."},
+        "Kings @ Lakers": {"edge": "LAL -13.0", "intel": "Luka/LeBron active. Kings tanking (14-47). Lakers' transition efficiency is +8.4 vs Kings' perimeter D."}
+    },
+    "NHL": {
+        "Panthers @ Islanders": {"edge": "FLA ML", "intel": "NYI 1-7 after Olympic breaks. Florida 100% health. Sorokin played yesterday; Rittich expected in net."},
+        "Golden Knights @ Penguins": {"edge": "PIT ML", "intel": "Sidney Crosby (Lower Body) OUT. Silovs starting. Penguins 30-15-13. Vegas #5 Power Play vs PIT #2 PK."},
+        "Flames @ Ducks": {"edge": "DUCKS ML", "intel": "Ducks have 58% win probability. Flames struggling on road back-to-backs. Ryan Strome (Ducks) GTD."}
+    },
+    "MLS": {
+        "Orlando @ Miami": {"edge": "MIA ML", "intel": "Florida Derby. Messi/Suarez starting. Orlando missing CB Jansson. Miami xG +1.8 higher than Orlando defense."},
+        "San Diego FC @ St. Louis": {"edge": "SDFC -160", "intel": "San Diego 59% win prob. SDFC high attacking volume vs St. Louis defense that allowed 11 shots on target in opener."}
+    }
 }
 
-# --- 3. THE WHALE (MAX UNIT PLAY) ---
-st.markdown("""
-<div class="whale-card">
-    <div style="color: #40E0FF; font-weight: 800; font-size: 0.7rem; letter-spacing: 1.5px; margin-bottom:10px;">🚨 MAX UNIT SYNDICATE PLAY</div>
-    <h2 style="margin: 0;">PHILADELPHIA 76ers @ BOSTON CELTICS</h2>
-    <p style="font-size: 1.2rem; margin: 5px 0;"><b>VERDICT: <span class="sharp-blue">CELTICS -9.5</span></b></p>
-    <p class="muted-intel">
-        <b>SHARP LOGIC:</b> Market hasn't adjusted to the bench disparity. With Embiid and Paul George out, Philly loses 42% of their scoring volume. 
-        Boston's second unit (Pritchard/White) vs Philly's G-League caliber depth is the deciding factor.
-    </p>
-</div>
-""", unsafe_allow_html=True)
+# --- 3. TERMINAL 1: SYNDICATE FOCUS (THE WHALE) ---
+st.title("⚡ EDGEINTEL NEURAL TERMINAL")
+st.markdown("""<div class="whale-card">
+    <div style="color: #40E0FF; font-weight: 800; font-size: 0.7rem; letter-spacing: 1.5px;">🚨 MAX UNIT SYNDICATE PLAY</div>
+    <h2 style="margin: 5px 0;">NBA: PHILADELPHIA @ BOSTON</h2>
+    <p style="font-size: 1.1rem; margin: 0;"><b>VERDICT: <span class="sharp-cyan">CELTICS -9.5</span></b></p>
+    <p style="color: #9BA3AF; font-size: 0.85rem;">Philly loses 42% scoring volume without Embiid. Boston depth disparity leads to blowout in 88% of sims.</p>
+</div>""", unsafe_allow_html=True)
 
-# --- 4. ON-DEMAND DEEP SCAN (THE DROP-DOWN) ---
-st.subheader("🎯 ON-DEMAND SYSTEM SCAN")
-selected_match = st.selectbox("SEARCH SUNDAY SLATE:", list(master_data.keys()))
+# --- 4. TERMINAL 2: THE GLOBAL BOARD (ALL SPORTS) ---
+st.divider()
+st.subheader("📡 THE GLOBAL RADAR (MARCH 1, 2026)")
 
-if selected_match:
-    d = master_data[selected_match]
-    st.markdown(f"""
-    <div style="background:#161B22; padding:20px; border-radius:8px; border-top:2px solid #40E0FF; margin-top:10px;">
-        <h3 style="margin-top:0;">{selected_match.upper()}</h3>
-        <p><b>SYSTEM VERDICT: <span class="sharp-blue">{d['edge']}</span></b> | <b>STATUS:</b> {d['status']}</p>
-        <p class="muted-intel"><b>SYNDICATE INTEL:</b> {d['intel']}</p>
-    </div>
-    """, unsafe_allow_html=True)
+for sport, games in master_data.items():
+    with st.expander(f"📊 {sport} BOARD"):
+        for game_name, details in games.items():
+            col1, col2, col3 = st.columns([3, 1, 1])
+            col1.write(f"**{game_name}**")
+            col2.markdown(f"<span class='sharp-cyan'>{details['edge']}</span>", unsafe_allow_html=True)
+            
+            if col3.button("SCAN INTEL", key=game_name):
+                st.session_state.active_game = game_name
+                st.session_state.active_intel = details['intel']
 
-# --- 5. GLOBAL RADAR OVERVIEW ---
-st.markdown('<div class="sport-header">📡 GLOBAL RADAR OVERVIEW</div>', unsafe_allow_html=True)
+# --- 5. NEURAL LINK (THE AI CHAT COMPONENT) ---
+if "active_game" in st.session_state:
+    st.markdown("---")
+    st.subheader(f"🧠 NEURAL LINK: {st.session_state.active_game}")
+    
+    # Display the Analysis
+    st.info(f"**SYNDICATE ANALYSIS:** {st.session_state.active_intel}")
+    
+    # AI Question Box
+    user_query = st.text_input(f"Interrogate the {st.session_state.active_game} data:", placeholder="e.g., 'How does the injury to Tatum affect the 1st Quarter spread?'")
+    
+    if user_query:
+        with st.spinner("Analyzing Neural Feed..."):
+            # Mock AI Response based on 2026 data
+            st.markdown(f"""<div class="ai-chat-box">
+                <b>SYNDICATE AI:</b> Regarding <i>"{user_query}"</i>, our 2026 model suggests that while the loss of 
+                stars like Tatum or Embiid shifts the total, the <b>depth disparity</b> in the second unit is where the 
+                true 'Sharp' edge lies. We recommend looking at <b>Boston -3.5 1Q</b> as they historically start fast 
+                at the Garden even with bench rotations.
+            </div>""", unsafe_allow_html=True)
 
-for cat in ["NBA", "NHL", "MLS", "CBB"]:
-    st.write(f"#### {cat} SUNDAY SLATE")
-    for game, info in master_data.items():
-        if game.startswith(cat):
-            c1, c2, c3 = st.columns([2, 1, 1])
-            c1.markdown(f"**{game.split(': ')[1]}**")
-            c2.write(f"{info['status']}")
-            c3.markdown(f"<span class='sharp-blue'>{info['edge']}</span>", unsafe_allow_html=True)
-    st.divider()
-
-st.link_button("🚀 UNLOCK FULL SYNDICATE ACCESS", "https://whop.com/YOUR_LINK", use_container_width=True)
+st.divider()
+st.link_button("🚀 UNLOCK FULL NEURAL ACCESS", "https://whop.com/YOUR_LINK", use_container_width=True)
