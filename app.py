@@ -1,287 +1,476 @@
 import streamlit as st
 from datetime import datetime
 
-st.set_page_config(page_title="EDGEINTEL | SYNDICATE", layout="wide")
+# ============================================================
+# CONFIG
+# ============================================================
+st.set_page_config(page_title="EDGEINTEL | Control Panel", layout="wide")
 
-# -----------------------------
-# THEME + DARK BUTTONS + CLEAN LAYOUT
-# -----------------------------
+# ============================================================
+# THEME (dark SaaS / like your screenshot)
+# ============================================================
 st.markdown("""
 <style>
-  .stApp { background-color: #0D1117 !important; color: #E6E8EE !important; }
+  .stApp { background-color: #0b1220 !important; color: #E6E8EE !important; }
   header{ visibility:hidden; }
 
-  /* Buttons */
+  section[data-testid="stSidebar"]{
+    background: #0a101b !important;
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* Dark buttons */
   div.stButton > button {
-      width: 100%;
-      border-radius: 12px !important;
-      border: 1px solid rgba(255,255,255,0.10) !important;
-      background: rgba(255,255,255,0.05) !important;
-      color: #E6E8EE !important;
-      font-weight: 900 !important;
-      padding: 0.55rem 0.9rem !important;
-      transition: 140ms ease-in-out;
+    border-radius: 10px !important;
+    border: 1px solid rgba(120,180,255,0.20) !important;
+    background: rgba(120,180,255,0.10) !important;
+    color: #E6E8EE !important;
+    font-weight: 850 !important;
+    padding: 0.42rem 0.75rem !important;
+    transition: 120ms ease-in-out;
+    width: 100%;
   }
   div.stButton > button:hover {
-      border: 1px solid rgba(0,245,212,0.35) !important;
-      background: rgba(0,245,212,0.10) !important;
-      transform: translateY(-1px);
+    border: 1px solid rgba(120,180,255,0.35) !important;
+    background: rgba(120,180,255,0.14) !important;
+    transform: translateY(-1px);
   }
 
-  .panel {
-      background: #0f1520;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 14px;
-      padding: 14px;
-      box-shadow: 0 14px 55px rgba(0,0,0,0.35);
+  .topbar {
+    padding: 14px 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(120,180,255,0.10), rgba(0,0,0,0.0));
+    box-shadow: 0 18px 60px rgba(0,0,0,0.35);
+    margin-bottom: 14px;
   }
+  .title { font-size: 18px; font-weight: 950; letter-spacing: 0.3px; }
+  .subtitle { font-size: 12px; opacity: 0.78; margin-top: 2px; }
+
+  .pill {
+    display:inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 950;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06);
+    color: rgba(230,232,238,0.86);
+  }
+
+  .cat {
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .catname {
+    font-size: 11px;
+    letter-spacing: 1.8px;
+    font-weight: 950;
+    opacity: 0.7;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .rowItem {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    margin-bottom: 10px;
+  }
+  .rowLeft { display:flex; align-items:center; gap: 10px; min-width: 280px; }
+  .ico {
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    display:flex; align-items:center; justify-content:center;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.04);
+    font-weight: 950;
+  }
+  .rowTitle { font-weight: 900; }
+  .rowMeta { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+  .rowRight { display:flex; align-items:center; gap: 10px; }
+  .muted { opacity: 0.72; }
+
+  .detail {
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    box-shadow: 0 18px 60px rgba(0,0,0,0.35);
+  }
+
   .card {
-      background: linear-gradient(180deg, #161B22 0%, rgba(22,27,34,0.65) 100%);
-      border: 1px solid #30363D;
-      border-radius: 12px;
-      padding: 14px;
-      box-shadow: 0 10px 36px rgba(0,0,0,0.22);
-  }
-
-  .sport {
-      font-size: 0.82rem; font-weight: 950; color: #00F5D4;
-      letter-spacing: 2px; text-transform: uppercase;
-      border-bottom: 1px solid #30363D; padding-bottom: 8px; margin: 18px 0 12px 0;
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.12);
+    box-shadow: 0 14px 45px rgba(0,0,0,0.35);
+    margin-bottom: 10px;
   }
 
   .teal { color: #00F5D4; font-weight: 950; }
-  .muted { color: rgba(230,232,238,0.72); }
-
-  .pill {
-      display:inline-block;
-      padding: 5px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 900;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.04);
-      margin-right: 8px;
-  }
-
-  .kpi {
-      display:flex; gap:10px; flex-wrap:wrap;
-      margin-top: 8px;
-  }
-
-  .sectionTitle {
-      font-weight: 950;
-      margin: 8px 0 6px 0;
-  }
-
-  .list {
-      margin: 0;
-      padding-left: 18px;
+  .badge {
+    display:inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 950;
+    border: 1px solid rgba(0,245,212,0.22);
+    background: rgba(0,245,212,0.08);
+    color: rgba(230,232,238,0.92);
   }
 </style>
 """, unsafe_allow_html=True)
 
-# -----------------------------
-# DATA (DEMO)
-# -----------------------------
-master_data = {
-    "NBA": [
-        {"game":"76ers @ Celtics","spread":"BOS -9.5","prop":"J. Brown O 27.5 PTS",
-         "thesis":"Usage shift + bench mismatch creates a misprice.",
-         "drivers":["Secondary usage consolidates into primary scorer props","Opponent depth drop-off","Shot quality profile improves"],
-         "risk":["Late lineup reversal","Blowout reduces 4Q minutes","Foul trouble variance"],
-         "invalidate":["Key starter returns unexpectedly","Prop moves > 1.0 against us","Pace projection flips"],
-         "execution":"Take early. If number worsens, reduce size or pass. Do not chase."},
-        {"game":"Knicks @ Spurs","spread":"SAS -1.5","prop":"Wemby O 4.5 BLK",
-         "thesis":"Rim pressure meets elite block profile.",
-         "drivers":["Opponent rim attempts","Block rate matchup","Paint touch volume"],
-         "risk":["Foul trouble","Opponent goes 5-out to avoid rim"],
-         "invalidate":["Minutes restriction news","Opponent shot diet shifts perimeter-heavy"],
-         "execution":"Prefer live entry if early foul risk shows; otherwise pregame small."},
-        {"game":"Kings @ Lakers","spread":"LAL -13.0","prop":"Luka O 3.5 3PM",
-         "thesis":"Perimeter leakage + early usage supports 3PM.",
-         "drivers":["3PA volume","Defensive leakage","Early rotation minutes"],
-         "risk":["Runaway reduces minutes","Cold shooting variance"],
-         "invalidate":["Minutes limit","Line/prop moves sharply"],
-         "execution":"Target best number; don’t pay premium for a public prop."}
-    ],
-    "NHL": [
-        {"game":"Knights @ Penguins","spread":"VGK ML","prop":"Eichel O 2.5 Shots",
-         "thesis":"Zone time + attempts projection supports shot prop.",
-         "drivers":["Shot attempts","O-zone time","Line matchup advantage"],
-         "risk":["Early lead slows pace","Goalie variance"],
-         "invalidate":["Goalie swap","Line shuffle reduces ice time"],
-         "execution":"If VGK scores early, consider live under on pace; otherwise hold."},
-        {"game":"Panthers @ Islanders","spread":"FLA -145","prop":"Barkov 1+ Point",
-         "thesis":"Top line exposure + PP usage gives value.",
-         "drivers":["PP time","Top line minutes","Possession edge"],
-         "risk":["Low-event game","Goalie steal"],
-         "invalidate":["Top line reshuffle","PP unit change"],
-         "execution":"Take 1+ point if price stable; avoid juiced alt lines."},
-        {"game":"Flames @ Ducks","spread":"ANA -1.5","prop":"McTavish O 0.5 PTS",
-         "thesis":"Home form + xGF trend supports points prop.",
-         "drivers":["Recent xGF","Home matchup","Volume + finishing"],
-         "risk":["Empty net variance","Puckline pain"],
-         "invalidate":["Back-to-back lineup swing","Star scratched"],
-         "execution":"Points prop is cleaner than puckline unless number is great."}
-    ],
-    "UFC": [
-        {"game":"UFC: Fighter A vs Fighter B","spread":"A -150","prop":"Over 1.5 Rounds",
-         "thesis":"Grappling threat suppresses early finish paths.",
-         "drivers":["Clinch time projection","Takedown attempts","Finish-rate suppression"],
-         "risk":["One-shot KO variance","Ref standups alter control"],
-         "invalidate":["Weight cut issues","Short-notice injury rumor"],
-         "execution":"If live shows early grappling success, add small; otherwise keep base."},
-        {"game":"UFC: Fighter C vs Fighter D","spread":"D +135","prop":"D by Decision",
-         "thesis":"Cardio edge + late scoring bias favors decision path.",
-         "drivers":["Round 3 volume","Control time","Damage differential trend"],
-         "risk":["Judges variability","Early knockdown swings"],
-         "invalidate":["Camp disruption","Takedown defense collapse"],
-         "execution":"Decision props are fragile—cap size and avoid bad price."},
-        {"game":"UFC: Fighter E vs Fighter F","spread":"E -110","prop":"E by KO/TKO",
-         "thesis":"Chin mismatch + power differential is the trigger.",
-         "drivers":["Power shots landed","Defense leakage","Distance control"],
-         "risk":["Wrestling surprise path","Cardio dump"],
-         "invalidate":["Late steam against","Style mismatch revealed"],
-         "execution":"Only take if price stays near open. Don’t buy inflated KO."}
-    ]
-}
+# ============================================================
+# DEMO DATA (replace later with your real model output)
+# Every pick now includes "FOR WHAT?" context: market, odds, book.
+# ============================================================
+DEMO_PICKS = [
+    # NBA
+    {"sport":"NBA", "game":"76ers @ Celtics", "market":"Spread", "pick":"BOS -9.5", "odds":"-110", "book":"FD",
+     "confidence":78,
+     "why":["Usage shifts toward BOS secondary scorers","Bench mismatch","Pace supports margin"],
+     "risk":["Late lineup reversal","Blowout minutes risk","Market steam moves number"],
+     "execution":"Take -9.5 to -10 max. Pass if -11+."},
 
-# -----------------------------
+    {"sport":"NBA", "game":"Kings @ Lakers", "market":"Player 3PT Made", "pick":"Luka O 3.5 3PM", "odds":"-115", "book":"DK",
+     "confidence":72,
+     "why":["High 3PA volume","Opponent perimeter leak","Early rotation minutes stable"],
+     "risk":["Runaway reduces 4Q attempts","Cold shooting variance"],
+     "execution":"Take -115 to -125. Pass at -140+."},
+
+    {"sport":"NBA", "game":"Knicks @ Spurs", "market":"Player Blocks", "pick":"Wemby O 4.5 BLK", "odds":"+105", "book":"MGM",
+     "confidence":66,
+     "why":["Opponent rim attempts","Block profile matchup","Paint touch volume"],
+     "risk":["Foul trouble","Opponent goes 5-out"],
+     "execution":"Prefer plus money. If it goes -130, pass."},
+
+    # NHL
+    {"sport":"NHL", "game":"Knights @ Penguins", "market":"Player Shots", "pick":"Eichel O 2.5 SOG", "odds":"-120", "book":"DK",
+     "confidence":80,
+     "why":["Shot attempt rate","O-zone time projection","Matchup line advantage"],
+     "risk":["Early lead slows pace","Goalie variance"],
+     "execution":"Take -120 to -135. If -150, pass."},
+
+    {"sport":"NHL", "game":"Panthers @ Islanders", "market":"Player Point", "pick":"Barkov 1+ Point", "odds":"-135", "book":"FD",
+     "confidence":74,
+     "why":["PP exposure","Top line minutes","Possession edge"],
+     "risk":["Low-event game","Goalie steal"],
+     "execution":"Take -135 to -150. Avoid -170+."},
+
+    {"sport":"NHL", "game":"Flames @ Ducks", "market":"Player Point", "pick":"McTavish O 0.5 PTS", "odds":"-110", "book":"MGM",
+     "confidence":67,
+     "why":["Home form trend","Chance creation volume","Matchup usage"],
+     "risk":["Randomness in points props"],
+     "execution":"Take -110 to -125. Pass at -140+."},
+
+    # UFC
+    {"sport":"MMA / UFC", "game":"Fighter A vs Fighter B", "market":"Rounds", "pick":"Over 1.5 Rounds", "odds":"-140", "book":"MGM",
+     "confidence":70,
+     "why":["Clinch time projection","Takedown threat suppresses early KO","Finish-rate suppression"],
+     "risk":["One-shot KO variance","Ref standups"],
+     "execution":"Take -140 to -155. Pass at -180+."},
+
+    {"sport":"MMA / UFC", "game":"Fighter C vs Fighter D", "market":"Method of Victory", "pick":"D by Decision", "odds":"+220", "book":"FD",
+     "confidence":61,
+     "why":["Cardio edge late","Control time projection","Damage differential trend"],
+     "risk":["Judges variability","Early knockdown flips outcome"],
+     "execution":"Small size only. Great price, high variance."},
+
+    {"sport":"MMA / UFC", "game":"Fighter E vs Fighter F", "market":"Method of Victory", "pick":"E by KO/TKO", "odds":"+155", "book":"DK",
+     "confidence":63,
+     "why":["Power differential","Defense leakage","Distance control"],
+     "risk":["Wrestling surprise path","Cardio dump"],
+     "execution":"Small size. Only if +140 or better."},
+]
+
+# Catalog modules (the screenshot vibe)
+MODULES = [
+    {"cat":"BASKETBALL", "name":"NBA", "icon":"🏀", "plan":"FREE"},
+    {"cat":"BASKETBALL", "name":"NCAAB", "icon":"🏀", "plan":"FREE"},
+    {"cat":"FOOTBALL", "name":"NFL", "icon":"🏈", "plan":"FREE"},
+    {"cat":"SOCCER", "name":"MLS", "icon":"⚽", "plan":"FREE"},
+    {"cat":"TENNIS", "name":"ATP", "icon":"🎾", "plan":"FREE"},
+    {"cat":"OTHER SPORTS", "name":"NHL", "icon":"🏒", "plan":"FREE"},
+    {"cat":"OTHER SPORTS", "name":"MMA / UFC", "icon":"🥊", "plan":"FREE"},
+]
+
+# ============================================================
 # STATE
-# -----------------------------
-if "selected" not in st.session_state:
-    st.session_state.selected = None
+# ============================================================
+if "page" not in st.session_state:
+    st.session_state.page = "Account"
+if "selected_module" not in st.session_state:
+    st.session_state.selected_module = None
+if "selected_game" not in st.session_state:
+    st.session_state.selected_game = None
 if "chat" not in st.session_state:
     st.session_state.chat = []
 
-def select_matchup(sport, g):
-    st.session_state.selected = {"sport": sport, **g}
+def score(p):
+    # demo ranking metric: confidence primarily
+    return p.get("confidence", 0)
+
+def picks_for_sport(sport_name):
+    return [p for p in DEMO_PICKS if p["sport"] == sport_name]
+
+def best_bet_of_day():
+    return max(DEMO_PICKS, key=score)
+
+def forced_picks_one_per_game():
+    # One pick per game (already one per game in this demo list)
+    # If you later have multiple markets per game, pick highest confidence per game.
+    by_game = {}
+    for p in DEMO_PICKS:
+        g = p["game"]
+        if g not in by_game or score(p) > score(by_game[g]):
+            by_game[g] = p
+    return [by_game[g] for g in sorted(by_game.keys())]
+
+def set_module(m):
+    st.session_state.selected_module = m
+    st.session_state.selected_game = None
     st.session_state.chat = []
 
-def scotty_answer(m, q):
+def set_game(pick):
+    st.session_state.selected_game = pick
+    st.session_state.chat = []
+
+def scotty_answer(p, q):
+    # Deterministic “deep analysis” response (stable).
+    why = "\n".join([f"- {x}" for x in p["why"]])
+    risk = "\n".join([f"- {x}" for x in p["risk"]])
     return f"""
-**Active Target:** {m['sport']} • {m['game']}
+**Active Pick**
+- Game: **{p['game']}**
+- Market: **{p['market']}**
+- Pick: **{p['pick']} {p['odds']}** (Book: {p['book']})
+- Confidence: **{p['confidence']}%**
 
-**Thesis:** {m['thesis']}
+**Why we picked it**
+{why}
 
-**Answer to your question:** {q}
+**Risk / Variance**
+{risk}
 
-**Decision Logic**
-- If it changes **probability** → adjust confidence/sizing
-- If it changes **price** → only take if number is still +EV
-- If it changes **timing** → act early or pass
+**Execution Rule**
+- {p['execution']}
 
-**Execution Rule:** {m['execution']}
+**Your question**
+{q}
+
+**Answer**
+- Translate the question into: does it change **probability**, **price**, or **timing**?
+- If it changes probability → adjust confidence/sizing.
+- If it changes price → only take if it’s still inside the execution rule.
+- If it changes timing → act early or pass. No chasing.
 """.strip()
 
-# -----------------------------
-# HEADER
-# -----------------------------
-st.title("🏛️ EDGEINTEL SYNDICATE")
+# ============================================================
+# SIDEBAR NAV
+# ============================================================
+with st.sidebar:
+    st.markdown("### EDGEINTEL")
+    st.caption("Control Panel")
+
+    nav = st.radio("Navigation", ["Account", "Webhooks", "Docs", "Log Out"],
+                   index=["Account","Webhooks","Docs","Log Out"].index(st.session_state.page),
+                   label_visibility="collapsed")
+    st.session_state.page = nav
+    st.divider()
+    st.caption("Click a module → then pick a game.")
+
+# ============================================================
+# TOPBAR
+# ============================================================
 stamp = datetime.now().strftime("%b %d, %Y • %I:%M %p")
 st.markdown(f"""
-<div class="panel">
-  <span class="pill">MODE: <span class="teal">DEMO INTEL</span></span>
-  <span class="pill">SCAN: <span class="teal">ACTIVE</span></span>
-  <span class="pill">UPDATED: <span class="teal">{stamp}</span></span>
-  <span class="pill">FLOW: <span class="teal">SELECT → DOSSIER → CHAT</span></span>
+<div class="topbar">
+  <div class="title">Account</div>
+  <div class="subtitle">Modules • Picks • Dossier • AI Q&A • Updated {stamp}</div>
 </div>
 """, unsafe_allow_html=True)
 
-# -----------------------------
-# MAIN LAYOUT: LEFT BOARD | RIGHT DOSSIER
-# -----------------------------
-left, right = st.columns([1.05, 1.15], gap="large")
+# ============================================================
+# MAIN LAYOUT
+# ============================================================
+left, right = st.columns([1.18, 1.0], gap="large")
 
+# ----------------------------
+# LEFT: Module Catalog + Best Bet + Forced Picks
+# ----------------------------
 with left:
-    st.markdown('<div class="panel">', unsafe_allow_html=True)
-    st.markdown("### 🎯 Board (Click a matchup)")
-    for sport, games in master_data.items():
-        st.markdown(f'<div class="sport">{sport}</div>', unsafe_allow_html=True)
-        for i, g in enumerate(games):
-            st.markdown(f"""
-            <div class="card" style="margin-bottom:10px;">
-              <div style="font-weight:950;">{g['game']}</div>
-              <div class="muted" style="margin-top:6px;">
-                Spread: <span class="teal">{g['spread']}</span> &nbsp; | &nbsp;
-                Prop: <span class="teal">{g['prop']}</span>
-              </div>
-              <div class="muted" style="margin-top:6px; font-size:12px;">{g['thesis']}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            if st.button("SCAN INTEL", key=f"scan_{sport}_{i}"):
-                select_matchup(sport, g)
-    st.markdown("</div>", unsafe_allow_html=True)
+    # BEST BET OF THE DAY
+    bb = best_bet_of_day()
+    st.markdown(f"""
+    <div class="card">
+      <div style="font-weight:950; font-size:14px;">🔥 Best Bet of the Day (DEMO Ranked)</div>
+      <div class="muted" style="margin-top:6px;">
+        <span class="badge">{bb['sport']}</span>
+        &nbsp; {bb['game']}
+      </div>
+      <div style="margin-top:8px;">
+        <b>Market:</b> {bb['market']} &nbsp; | &nbsp;
+        <b>Pick:</b> <span class="teal">{bb['pick']} {bb['odds']}</span> &nbsp; | &nbsp;
+        <b>Book:</b> {bb['book']} &nbsp; | &nbsp;
+        <b>Conf:</b> {bb['confidence']}%
+      </div>
+      <div class="muted" style="margin-top:8px;">Rule: {bb['execution']}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-with right:
-    st.markdown('<div class="panel">', unsafe_allow_html=True)
-    st.markdown("### 🧠 Dossier + Scotty (AI)")
-
-    if not st.session_state.selected:
-        st.info("Select a matchup on the left. The dossier and AI chat will load here.")
-        st.markdown("</div>", unsafe_allow_html=True)
-    else:
-        m = st.session_state.selected
-
+    # FORCED PICKS (one per game)
+    st.markdown("#### Forced Picks (One per game)")
+    fp = forced_picks_one_per_game()
+    for p in fp:
         st.markdown(f"""
-        <div class="card">
-          <div style="font-weight:950; font-size:16px;">
-            <span class="teal">{m['sport']}</span> • {m['game']}
+        <div class="rowItem">
+          <div class="rowLeft">
+            <div class="ico">🎯</div>
+            <div>
+              <div class="rowTitle">{p['game']}</div>
+              <div class="rowMeta">
+                {p['sport']} • {p['market']} • <span class="teal">{p['pick']} {p['odds']}</span> • {p['book']} • {p['confidence']}%
+              </div>
+            </div>
           </div>
-          <div class="kpi">
-            <span class="pill">SPREAD: <span class="teal">{m['spread']}</span></span>
-            <span class="pill">PROP: <span class="teal">{m['prop']}</span></span>
-          </div>
-          <div class="muted" style="margin-top:10px;"><b>Thesis:</b> {m['thesis']}</div>
+          <div class="rowRight"><span class="pill">DEMO</span></div>
         </div>
         """, unsafe_allow_html=True)
 
-        tab1, tab2, tab3, tab4, tab5 = st.tabs(["Thesis", "Drivers", "Risk", "Invalidation", "Execution"])
+    st.markdown("#### Modules")
+    q = st.text_input("Search modules", placeholder="nba, nhl, ufc...")
+    cats = ["ALL"] + sorted(list({m["cat"] for m in MODULES}))
+    cat = st.selectbox("Category", cats, index=0)
 
-        with tab1:
-            st.markdown("**One-line thesis:**")
-            st.markdown(f"- {m['thesis']}")
+    filtered = MODULES
+    if cat != "ALL":
+        filtered = [m for m in filtered if m["cat"] == cat]
+    if q.strip():
+        filtered = [m for m in filtered if q.lower() in m["name"].lower()]
 
-        with tab2:
-            st.markdown("**Primary drivers:**")
-            st.markdown("<ul class='list'>" + "".join([f"<li>{x}</li>" for x in m["drivers"]]) + "</ul>", unsafe_allow_html=True)
+    grouped = {}
+    for m in filtered:
+        grouped.setdefault(m["cat"], []).append(m)
 
-        with tab3:
-            st.markdown("**What can kill it:**")
-            st.markdown("<ul class='list'>" + "".join([f"<li>{x}</li>" for x in m["risk"]]) + "</ul>", unsafe_allow_html=True)
+    for catname, items in grouped.items():
+        st.markdown(f'<div class="cat"><div class="catname">{catname}</div></div>', unsafe_allow_html=True)
+        for m in items:
+            rowA, rowB = st.columns([0.76, 0.24])
+            with rowA:
+                st.markdown(f"""
+                <div class="rowItem">
+                  <div class="rowLeft">
+                    <div class="ico">{m['icon']}</div>
+                    <div>
+                      <div class="rowTitle">{m['name']}</div>
+                      <div class="rowMeta">Picks • Dossier • AI Q&A</div>
+                    </div>
+                  </div>
+                  <div class="rowRight">
+                    <span class="pill">{m['plan']}</span>
+                  </div>
+                </div>
+                """, unsafe_allow_html=True)
+            with rowB:
+                if st.button("Open", key=f"open_{m['cat']}_{m['name']}"):
+                    set_module(m)
+                st.button("Upgrade", key=f"up_{m['cat']}_{m['name']}")
 
-        with tab4:
-            st.markdown("**Pass rules:** (if any of these happen, we do NOT bet)")
-            st.markdown("<ul class='list'>" + "".join([f"<li>{x}</li>" for x in m["invalidate"]]) + "</ul>", unsafe_allow_html=True)
+# ----------------------------
+# RIGHT: Sport Slate → Game Dossier → AI Chat
+# ----------------------------
+with right:
+    st.markdown('<div class="detail">', unsafe_allow_html=True)
 
-        with tab5:
-            st.markdown("**Execution plan:**")
-            st.markdown(f"- {m['execution']}")
+    if not st.session_state.selected_module:
+        st.markdown("### Module Detail")
+        st.info("Click **Open** on a module to load the slate + dossier + AI chat here.")
+        st.markdown("</div>", unsafe_allow_html=True)
+    else:
+        mod = st.session_state.selected_module
+        st.markdown(f"### {mod['icon']} {mod['name']}")
+        st.caption(f"{mod['cat']} • Plan: {mod['plan']}")
 
-        st.markdown("---")
-        st.markdown("#### Ask Scotty")
-        sug1, sug2, sug3 = st.columns(3)
-        if sug1.button("Explain edge like investor"):
-            q = "Explain the edge like I'm an investor. What matters most?"
-            st.session_state.chat.append({"role":"user","content":q})
-            st.session_state.chat.append({"role":"assistant","content":scotty_answer(m, q)})
-        if sug2.button("What would invalidate it?"):
-            q = "What specifically would invalidate this edge?"
-            st.session_state.chat.append({"role":"user","content":q})
-            st.session_state.chat.append({"role":"assistant","content":scotty_answer(m, q)})
-        if sug3.button("Sizing + timing rules"):
-            q = "Give sizing and timing rules. When do we pass?"
-            st.session_state.chat.append({"role":"user","content":q})
-            st.session_state.chat.append({"role":"assistant","content":scotty_answer(m, q)})
+        sport_picks = picks_for_sport(mod["name"])
 
-        user_msg = st.chat_input("Ask about this matchup (props, spread, scenarios, sizing, hedges)…")
-        if user_msg:
-            st.session_state.chat.append({"role":"user","content":user_msg})
-            st.session_state.chat.append({"role":"assistant","content":scotty_answer(m, user_msg)})
+        # If module has no demo picks, show placeholder
+        if not sport_picks:
+            st.warning("No demo picks loaded for this module yet. Wire your model output here.")
+            st.markdown("</div>", unsafe_allow_html=True)
+        else:
+            # Slate list
+            st.markdown("#### Slate (click a game)")
+            for i, p in enumerate(sport_picks):
+                if st.button(f"{p['game']}  •  {p['market']}  •  {p['pick']} {p['odds']}  •  {p['book']}  •  {p['confidence']}%",
+                             key=f"game_{mod['name']}_{i}"):
+                    set_game(p)
 
-        for msg in st.session_state.chat[-12:]:
-            with st.chat_message(msg["role"]):
-                st.markdown(msg["content"])
+            st.markdown("---")
+
+            # Dossier + AI
+            if not st.session_state.selected_game:
+                st.info("Select a game above to open the dossier + ask Scotty questions.")
+            else:
+                p = st.session_state.selected_game
+
+                st.markdown(f"""
+                <div class="card">
+                  <div style="font-weight:950; font-size:14px;">🧠 Dossier</div>
+                  <div class="muted" style="margin-top:6px;">
+                    <span class="badge">{p['sport']}</span>
+                    &nbsp; {p['game']}
+                  </div>
+                  <div style="margin-top:8px;">
+                    <b>FOR WHAT:</b> {p['market']}<br/>
+                    <b>PICK:</b> <span class="teal">{p['pick']} {p['odds']}</span> &nbsp; (Book: {p['book']})<br/>
+                    <b>CONFIDENCE:</b> {p['confidence']}%
+                  </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                t1, t2 = st.tabs(["Deep Analysis", "Ask Scotty"])
+
+                with t1:
+                    st.markdown("**Why we picked it**")
+                    st.markdown("\n".join([f"- {x}" for x in p["why"]]))
+
+                    st.markdown("**Risk / Variance**")
+                    st.markdown("\n".join([f"- {x}" for x in p["risk"]]))
+
+                    st.markdown("**Execution Rule**")
+                    st.write(p["execution"])
+
+                with t2:
+                    c1, c2, c3 = st.columns(3)
+                    if c1.button("Explain the edge"):
+                        q = "Explain the edge cleanly. What is the one driver that matters most?"
+                        st.session_state.chat.append(("user", q))
+                        st.session_state.chat.append(("assistant", scotty_answer(p, q)))
+                    if c2.button("What kills it?"):
+                        q = "What kills this bet and how do we defend?"
+                        st.session_state.chat.append(("user", q))
+                        st.session_state.chat.append(("assistant", scotty_answer(p, q)))
+                    if c3.button("Sizing rules"):
+                        q = "Give sizing + timing rules and when we pass."
+                        st.session_state.chat.append(("user", q))
+                        st.session_state.chat.append(("assistant", scotty_answer(p, q)))
+
+                    user_msg = st.chat_input("Ask about this pick… (props, spread, scenarios, hedges, timing)")
+                    if user_msg:
+                        st.session_state.chat.append(("user", user_msg))
+                        st.session_state.chat.append(("assistant", scotty_answer(p, user_msg)))
+
+                    for role, content in st.session_state.chat[-12:]:
+                        with st.chat_message("user" if role == "user" else "assistant"):
+                            st.markdown(content)
 
         st.markdown("</div>", unsafe_allow_html=True)
 
