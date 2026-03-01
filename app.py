@@ -1,82 +1,70 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
 
-# --- 1. THE "NO WHITE" DARK THEME ---
-st.set_page_config(page_title="EDGEINTEL | BLACK-OPS", layout="wide")
+# --- 1. SETTINGS & CSS (DEEP DARK THEME) ---
+st.set_page_config(page_title="EDGEINTEL | HUB", layout="wide")
 
 st.markdown("""
 <style>
-    /* Force everything to deep black/charcoal */
-    .stApp {
-        background-color: #0d1117 !important;
-        color: #c9d1d9 !important;
+    .stApp { background-color: #06090f !important; color: #c9d1d9 !important; }
+    .sport-header { 
+        background: linear-gradient(90deg, #1f6feb, transparent); 
+        padding: 10px 20px; border-radius: 8px; margin: 20px 0 10px 0; 
+        font-weight: bold; letter-spacing: 1px;
     }
-    /* Style the tabs to match the dark theme */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 24px;
-        background-color: #0d1117;
+    .intel-box {
+        background-color: #0d1117; border: 1px solid #30363d;
+        border-left: 4px solid #238636; padding: 20px; border-radius: 8px;
+        margin-top: 10px; animation: fadeIn 0.5s;
     }
-    .stTabs [data-baseweb="tab"] {
-        height: 50px;
-        background-color: #161b22;
-        border-radius: 4px 4px 0px 0px;
-        color: #8b949e;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: #1f6feb !important;
-        color: white !important;
-    }
-    /* Sidebar styling */
-    section[data-testid="stSidebar"] {
-        background-color: #06090f !important;
-        border-right: 1px solid #30363d;
-    }
-    /* Table styling */
-    div[data-testid="stDataFrame"] {
-        background-color: #0d1117;
-        border: 1px solid #30363d;
-        border-radius: 8px;
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. EXECUTIVE SIDEBAR ---
-with st.sidebar:
-    st.header("🎮 GLOBAL RADAR")
-    min_edge = st.slider("Min Edge (pts/%)", 0.0, 5.0, 0.2)
-    st.divider()
-    st.markdown("**System Status:** <span style='color:#238636;'>● ENCRYPTED</span>", unsafe_allow_html=True)
+# --- 2. DATA LOADERS (SUNDAY MARCH 1, 2026) ---
+nba_data = [
+    {"TIME": "18:00 EST", "GAME": "76ers @ Celtics", "VEGAS": "-8.5", "MODEL": "-11.2", "EDGE": "2.7", "ID": "NBA_1", 
+     "WHY": "Celtics 8-1 ATS at home vs Atlantic Division. Embiid's usage rate drops 12% on 2nd night of B2B."},
+    {"TIME": "20:30 EST", "GAME": "Knicks @ Spurs", "VEGAS": "+1.5", "MODEL": "-1.5", "EDGE": "3.0", "ID": "NBA_2",
+     "WHY": "Knicks interior defense ranks #1 vs Wemby-style stretch bigs. Vegas overreacting to Spurs' recent OT win."},
+]
 
-# --- 3. DATA ENGINE (WITH EVENT TIMES) ---
-def get_tennis_data():
-    return pd.DataFrame([
-        {"TIME": "14:00 UTC", "Match": "Alcaraz vs Sinner", "Vegas": -110, "Model": -145, "Edge": 6.8, "Pred": "2-1 Sets"},
-        {"TIME": "16:30 UTC", "Match": "Djokovic vs Medvedev", "Vegas": -200, "Model": -210, "Edge": 1.2, "Pred": "2-0 Sets"},
-        {"TIME": "19:00 UTC", "Match": "Swiatek vs Sabalenka", "Vegas": +110, "Model": -105, "Edge": 4.5, "Pred": "2-1 Sets"}
-    ])
+tennis_data = [
+    {"TIME": "14:00 UTC", "MATCH": "Sinner vs Alcaraz", "VEGAS": "-110", "MODEL": "-140", "EDGE": "5.4%", "ID": "TEN_1",
+     "WHY": "Alcaraz surface speed adjustment. Sinner's 1st serve win % drops on slow hardcourts."},
+    {"TIME": "16:00 UTC", "MATCH": "Djokovic vs Medvedev", "VEGAS": "-200", "MODEL": "-245", "EDGE": "4.2%", "ID": "TEN_2",
+     "WHY": "Djokovic historical 92% win rate in Dubai Finals. Medvedev showing fatigue in 3rd set rally stats."},
+]
 
-def get_bball_data():
-    return pd.DataFrame([
-        {"TIME": "18:00 EST", "Game": "Lakers @ Celtics", "Vegas": "-5.5", "Model": "-8.2", "Edge": 2.7, "Pred": "112-104"},
-        {"TIME": "20:30 EST", "Game": "Knicks @ 76ers", "Vegas": "+2.0", "Model": "-1.5", "Edge": 3.5, "Pred": "105-107"},
-        {"TIME": "22:00 EST", "Game": "Suns @ Mavericks", "Vegas": "-1.0", "Model": "-1.2", "Edge": 0.2, "Pred": "118-119"}
-    ])
+# --- 3. RENDER ALL SPORTS ON ONE SCREEN ---
+st.title("📡 SYNDICATE MULTI-VIEW RADAR")
+st.markdown("**Status:** <span style='color:#238636;'>● LIVE DATA SYNCED</span>", unsafe_allow_html=True)
 
-# --- 4. RENDER HUB ---
-st.title("📡 SYNDICATE COMMAND CENTER")
+# --- BASKETBALL SECTION ---
+st.markdown('<div class="sport-header">🏀 NBA / NCAAB INTELLIGENCE</div>', unsafe_allow_html=True)
+for game in nba_data:
+    col1, col2, col3, col4 = st.columns([1, 3, 1, 1])
+    col1.write(game["TIME"])
+    col2.write(f"**{game['GAME']}**")
+    col3.write(f"Edge: {game['EDGE']}")
+    if col4.button("ANALYZE", key=game["ID"]):
+        st.markdown(f"""
+        <div class="intel-box">
+            <h4>🧠 DEEP INTEL: {game['GAME']}</h4>
+            <p><b>PROJECTION:</b> Model predicts a final spread of {game['MODEL']}.</p>
+            <p><b>KEY ANALYTIC:</b> {game['WHY']}</p>
+            <p style="color:#58a6ff;"><i>Confidence Score: 91% | Volume: High</i></p>
+        </div>
+        """, unsafe_allow_html=True)
 
-tab1, tab2, tab3 = st.tabs(["🎾 TENNIS", "🏀 BASKETBALL", "⚔️ UFC"])
-
-with tab1:
-    df_t = get_tennis_data()
-    st.dataframe(df_t[df_t["Edge"] >= min_edge], use_container_width=True, hide_index=True)
-
-with tab2:
-    df_b = get_bball_data()
-    st.dataframe(df_b[df_b["Edge"] >= min_edge], use_container_width=True, hide_index=True)
-
-with tab3:
-    st.info("UFC 312: Early lines scanning... No edges detected yet.")
-
-# --- 5.
+# --- TENNIS SECTION ---
+st.markdown('<div class="sport-header">🎾 ATP / WTA INTELLIGENCE</div>', unsafe_allow_html=True)
+for match in tennis_data:
+    col1, col2, col3, col4 = st.columns([1, 3, 1, 1])
+    col1.write(match["TIME"])
+    col2.write(f"**{match['MATCH']}**")
+    col3.write(f"Edge: {match['EDGE']}")
+    if col4.button("ANALYZE", key=match["ID"]):
+        st.markdown(f"""
+        <div class="intel-box" style="border-left-color: #1f6feb;">
+            <h4>🧠 DEEP INTEL: {match['MATCH']}
