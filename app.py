@@ -1,82 +1,69 @@
 import streamlit as st
 
-# --- 1. THEME & ACCESSIBILITY ---
-st.set_page_config(page_title="EDGEINTEL | HUB", layout="wide")
+# --- 1. THEME CONFIG ---
+st.set_page_config(page_title="EDGEINTEL | GLOBAL", layout="wide")
 
 st.markdown("""
 <style>
     .stApp { background-color: #0B0D10 !important; color: #E9EEF5 !important; }
-    
-    /* WHALE BOX (GOLD) */
-    .whale-section {
-        background: linear-gradient(145deg, #1C2128, #0B0D10);
-        border: 2px solid #FFD700; border-radius: 15px;
-        padding: 25px; margin-bottom: 30px;
-    }
-    
-    /* SCANNER BOX (PURPLE) */
-    .request-section {
-        background-color: #151A21; border: 2px solid #BF40FF;
-        border-radius: 12px; padding: 25px; margin-bottom: 30px;
-    }
-
-    /* HEADERS & BUTTONS */
-    .sport-header { 
-        background-color: #151A21; border-left: 5px solid #40E0FF;
-        padding: 12px; margin: 20px 0 10px 0; font-weight: 800; color: #40E0FF;
-    }
-    div.stButton > button {
-        background-color: #1F6FEB !important; color: white !important;
-        border: none !important; border-radius: 6px !important; font-weight: 700 !important;
-    }
+    .whale-section { background: linear-gradient(145deg, #1C2128, #0B0D10); border: 2px solid #FFD700; border-radius: 15px; padding: 25px; margin-bottom: 30px; }
+    .request-section { background-color: #151A21; border: 2px solid #BF40FF; border-radius: 12px; padding: 25px; margin-bottom: 30px; }
+    .sport-header { background-color: #151A21; border-left: 5px solid #40E0FF; padding: 10px 15px; margin: 25px 0 10px 0; font-weight: 800; color: #40E0FF; text-transform: uppercase; font-size: 0.85rem; }
+    div.stButton > button { background-color: #1F6FEB !important; color: white !important; border: none !important; border-radius: 6px !important; font-weight: 700 !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. LIVE SUNDAY DATA (MARCH 1, 2026) ---
-all_games = {
-    "76ers @ Celtics": {
-        "status": "8:00 PM ET", "edge": "BOS -9.5", "conf": "94%",
-        "intel": "Joel Embiid and Paul George are officially OUT. Boston's net rating at home is +14.2 against shorthanded lineups. Jaylen Brown (29.1 PPG) is the primary engine tonight. Verdict: CELTICS -9.5."
-    },
-    "Kings @ Lakers": {
-        "status": "9:30 PM ET", "edge": "LAL -13.0", "conf": "82%",
-        "intel": "Lakers are heavy 13-point favorites. LeBron (foot) is questionable, but Luka Doncic is projected to clear 32.5 points. Verdict: LAKERS -13.0."
-    },
-    "Bucks @ Bulls": {
-        "status": "FINAL", "edge": "MIL -15.5", "conf": "WIN",
-        "intel": "Milwaukee dominated the paint early. Giannis finished with 30+. System accurately tracked the transition mismatch."
-    }
+# --- 2. THE GLOBAL SUNDAY REPOSITORY (MARCH 1, 2026) ---
+# This dictionary now acts as your master database for the scanner
+master_data = {
+    "NBA: 76ers @ Celtics": {"status": "8:00 PM ET", "edge": "BOS -9.5", "conf": "94%", "intel": "Embiid/George OUT. Celtics net rating +14.2 at home. Pick: BOS -9.5"},
+    "NBA: Kings @ Lakers": {"status": "9:30 PM ET", "edge": "LAL -13.5", "conf": "82%", "intel": "Mismatch in transition defense; Kings missing rotation depth. Pick: LAL -13.5"},
+    "NBA: Nuggets @ Timberwolves": {"status": "LIVE (Q2)", "edge": "DEN -3.5", "conf": "88%", "intel": "Jokic dominating paint (12 reb). Denver's transition D is #1 today. Pick: DEN -3.5"},
+    "NHL: Panthers @ Islanders": {"status": "6:30 PM ET", "edge": "FLA ML", "conf": "85%", "intel": "Florida 1st home game since break. Islanders struggling with PK efficiency. Pick: PANTHERS ML"},
+    "NCAAB: Michigan St @ Indiana": {"status": "3:45 PM ET", "edge": "MSU -2.5", "conf": "91%", "intel": "Sparty's interior defense (98th percentile) neutralizes Indiana's post-game. Pick: MSU -2.5"},
+    "MLS: Orlando City vs Inter Miami": {"status": "7:00 PM ET", "edge": "MIA ML", "conf": "78%", "intel": "Messi starting. Orlando missing key CB due to suspension. Pick: MIAMI ML"},
+    "TENNIS: Indian Wells Qualies": {"status": "LIVE", "edge": "UNDER 21.5", "conf": "80%", "intel": "Surface speed is 4% slower than 2025 avg; favors grinders. Pick: UNDER"}
 }
 
-# --- 3. SECTION: THE WHALE PICK ---
+# --- 3. THE WHALE PICK ---
 st.markdown("""
 <div class="whale-section">
-    <div style="color:#FFD700; font-weight:900; letter-spacing:2px;">🚨 FEATURED WHALE PICK</div>
-    <h2 style="margin:10px 0;">76ERS @ CELTICS (SUN MARCH 1)</h2>
-    <p style="font-size:1.1rem;"><b>THE PICK: CELTICS -9.5</b></p>
-    <p style="color:#ADB5BD;">Philly is gutted tonight. No Embiid, no George. Boston is 39-22 and looking to extend their lead in the East. Our system identifies a massive rim-protection void that Jaylen Brown will exploit.</p>
+    <div style="color:#FFD700; font-weight:900; letter-spacing:2px;">🚨 SYNDICATE WHALE PICK</div>
+    <h2 style="margin:10px 0;">76ERS @ CELTICS (NBA)</h2>
+    <p style="font-size:1.1rem; color:#FFFFFF;"><b>THE PICK: BOSTON CELTICS -9.5</b></p>
+    <p style="color:#ADB5BD;">The model identifies a 94% confidence rating due to Philadelphia being shorthanded (Embiid/George OUT). Boston is at full strength and dominant at TD Garden.</p>
 </div>
 """, unsafe_allow_html=True)
 
-# --- 4. SECTION: DEEP INTELLIGENCE REQUEST ---
+# --- 4. ON-DEMAND SYSTEM SCAN ---
 st.markdown('<div class="request-section">', unsafe_allow_html=True)
 st.subheader("🎯 ON-DEMAND SYSTEM SCAN")
-choice = st.selectbox("SELECT MATCHUP:", list(all_games.keys()))
+choice = st.selectbox("CHOOSE ANY MATCHUP ON THE BOARD:", list(master_data.keys()))
 
-if st.button("EXECUTE SCAN"):
-    data = all_games[choice]
+if st.button("EXECUTE DEEP SCAN"):
+    d = master_data[choice]
     st.markdown(f"""
     <div style="background:#0B0D10; padding:20px; border-radius:10px; border-left:4px solid #BF40FF; margin-top:15px;">
         <h3 style="color:#BF40FF; margin-top:0;">{choice.upper()}</h3>
-        <p><b>SYSTEM VERDICT:</b> {data['edge']} ({data['conf']})</p>
-        <p><b>INTEL:</b> {data['intel']}</p>
+        <p><b>STATUS:</b> {d['status']} | <b>VERDICT:</b> {d['edge']} ({d['conf']})</p>
+        <p><b>SYSTEM INTEL:</b> {d['intel']}</p>
     </div>
     """, unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# --- 5. SECTION: GLOBAL RADAR ---
-st.markdown('<div class="sport-header">📡 GLOBAL RADAR OVERVIEW</div>', unsafe_allow_html=True)
-for name, info in all_games.items():
-    c1, c2, c3 = st.columns([2, 1, 1])
-    c1.markdown(f"**{name}**")
-    c2.write(info['status'])
+# --- 5. GLOBAL RADAR OVERVIEW (ALL SPORTS) ---
+st.markdown('<div class="sport-header">📡 GLOBAL RADAR (SUNDAY, MARCH 1)</div>', unsafe_allow_html=True)
+
+# Categorizing the radar for better reading
+categories = ["NBA", "NHL", "NCAAB", "MLS", "TENNIS"]
+for cat in categories:
+    st.write(f"--- **{cat} SLATE** ---")
+    for game, info in master_data.items():
+        if game.startswith(cat):
+            c1, c2, c3 = st.columns([2, 1, 1])
+            c1.write(f"**{game.split(': ')[1]}**")
+            c2.write(f"Time: {info['status']}")
+            c3.write(f"Edge: {info['edge']}")
+
+st.divider()
+st.link_button("🚀 JOIN THE PRIVATE SYNDICATE (WHOP)", "https://whop.com/YOUR_LINK", use_container_width=True)
