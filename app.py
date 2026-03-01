@@ -334,4 +334,76 @@ scan_rate = f"{random.randint(12000, 18200):,}/min"
 vol = "ELEVATED" if (df["Vol"] == "High").any() else "NORMAL"
 active = int((df["EdgePts"] >= 2.0).sum())
 
-st.mark
+# -----------------------------
+# HERO + KPIs RENDER
+# -----------------------------
+st.markdown(f"""
+<div class="hero">
+    <div class="h-title">📡 EDGEINTEL COMMAND CENTER</div>
+    <div class="h-sub">NEURAL ENGINE v3.4.2 • {now} • SYSTEM STATUS: <span style="color:#238636;">OPTIMAL</span></div>
+    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 24px;">
+        <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+            <div style="font-size:11px; opacity:0.6; letter-spacing:1px;">ENGINE LATENCY</div>
+            <div style="font-size:20px; font-weight:800; color:#58a6ff;">{latency_ms}ms</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+            <div style="font-size:11px; opacity:0.6; letter-spacing:1px;">SCAN RATE</div>
+            <div style="font-size:20px; font-weight:800; color:#238636;">{scan_rate}</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+            <div style="font-size:11px; opacity:0.6; letter-spacing:1px;">MARKET VOL</div>
+            <div style="font-size:20px; font-weight:800; color:#d29922;">{vol}</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+            <div style="font-size:11px; opacity:0.6; letter-spacing:1px;">ACTIVE EDGES</div>
+            <div style="font-size:20px; font-weight:800; color:#f85149;">{active}</div>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+st.write("") # Spacer
+
+# -----------------------------
+# MAIN INTELLIGENCE MATRIX
+# -----------------------------
+if not filtered.empty:
+    display_df = filtered[[
+        "Tier", "Game", "Market", "Vegas", "Model", "EdgePts", "ConfPct", "Freshness", "WhyTag"
+    ]].copy()
+    
+    display_df.columns = [
+        "TIER", "MATCHUP", "MARKET", "VEGAS", "MODEL", "EDGE", "CONF %", "SYNC", "INSIGHT BRIEF"
+    ]
+
+    st.dataframe(
+        display_df,
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "CONF %": st.column_config.ProgressColumn("CONF %", min_value=0, max_value=100, format="%d%%"),
+            "EDGE": st.column_config.NumberColumn("EDGE", format="+%d pts"),
+        }
+    )
+else:
+    st.warning("📡 Scanning... Adjust filters to see live market data.")
+
+# -----------------------------
+# ACTIVATE SCOTTY AI WIDGET
+# -----------------------------
+scotty_picks = []
+for _, row in filtered.iterrows():
+    scotty_picks.append({
+        "game": row["Game"],
+        "tier": row["Tier"],
+        "edge": row["EdgePts"],
+        "conf": f"{row['ConfPct']}%",
+        "why": row["WhyTag"],
+        "brief": f"Operator, in the {row['Game']} matchup, we detect a {row['EdgePts']} point edge. Confidence is {row['ConfPct']} percent. {row['WhyTag']}"
+    })
+
+if scotty_picks:
+    render_scotty_widget(scotty_picks, raiders_mode=raiders_mode)
+
+st.divider()
+st.caption("Proprietary Neural Weights applied. Data synced with Vegas API.")
