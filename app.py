@@ -334,6 +334,4 @@ scan_rate = f"{random.randint(12000, 18200):,}/min"
 vol = "ELEVATED" if (df["Vol"] == "High").any() else "NORMAL"
 active = int((df["EdgePts"] >= 2.0).sum())
 
-st.markdown(f"""
-<div class="hero">
-  <div class="h-title"><span class="pulse"></
+st.mark
