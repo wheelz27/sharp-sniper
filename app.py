@@ -1,7 +1,7 @@
 import streamlit as st
 
 # --- 1. THEME CONFIG ---
-st.set_page_config(page_title="EDGEINTEL | GLOBAL", layout="wide")
+st.set_page_config(page_title="EDGEINTEL | FULL BOARD", layout="wide")
 
 st.markdown("""
 <style>
@@ -9,63 +9,36 @@ st.markdown("""
     .whale-section { background: linear-gradient(145deg, #1C2128, #0B0D10); border: 2px solid #FFD700; border-radius: 15px; padding: 25px; margin-bottom: 30px; }
     .request-section { background-color: #151A21; border: 2px solid #BF40FF; border-radius: 12px; padding: 25px; margin-bottom: 30px; }
     .sport-header { background-color: #151A21; border-left: 5px solid #40E0FF; padding: 10px 15px; margin: 25px 0 10px 0; font-weight: 800; color: #40E0FF; text-transform: uppercase; font-size: 0.85rem; }
+    .game-row { border-bottom: 1px solid #30363d; padding: 10px 0; }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. THE COMPLETE SUNDAY RADAR REPOSITORY (MARCH 1, 2026) ---
+# --- 2. THE TOTAL SUNDAY BOARD (MARCH 1, 2026) ---
 master_data = {
-    # TENNIS SLATE
-    "TENNIS: WTA Austin Final (Stearns vs Townsend)": {"status": "FINAL", "edge": "🎯 WIN", "conf": "100%", "intel": "Peyton Stearns def. Townsend 7-6, 7-5. System accurately picked the home-court advantage for the UT Alum."},
-    "TENNIS: Mérida Open Final": {"status": "7:00 PM ET", "edge": "OVER 21.5", "conf": "82%", "intel": "High humidity in Mérida slows down the ball. Expect long rallies and a 3-set struggle between Bucsa and Frech."},
-    "TENNIS: Indian Wells (W) Qualies": {"status": "LIVE", "edge": "LIVE VALUE", "conf": "85%", "intel": "Kamilla Rakhimova just secured her match 6-2, 6-2. Court speed is confirmed 4% slower than 2025. Tail defensive grinders in upcoming rounds."},
-    
     # NBA SLATE
-    "NBA: 76ers @ Celtics": {"status": "8:00 PM ET", "edge": "BOS -9.5", "conf": "94%", "intel": "Embiid/George OUT. Boston's net rating at home is +14.2 against shorthanded frontcourts."},
-    "NBA: Kings @ Lakers": {"status": "9:30 PM ET", "edge": "LAL -13.5", "conf": "82%", "intel": "Kings managing heavy rotation fatigue. Lakers projected to dominate transition scoring."},
-    
-    # NHL & MLS
-    "NHL: Panthers @ Islanders": {"status": "6:30 PM ET", "edge": "FLA ML", "conf": "85%", "intel": "Florida 1st game since break. Islanders PK unit is bottom-10 in the league currently."},
-    "MLS: Orlando vs Inter Miami": {"status": "7:00 PM ET", "edge": "MIA ML", "conf": "78%", "intel": "Messi/Suarez starting. Orlando defense is missing two starters due to injury/suspension."}
-}
+    "NBA: Spurs @ Knicks": {"status": "FINAL", "edge": "NYK -12.5", "conf": "WIN", "intel": "Knicks dominated the paint as predicted. FINAL: 114-89."},
+    "NBA: Timberwolves @ Nuggets": {"status": "LIVE (Q2)", "edge": "DEN -3.5", "conf": "88%", "intel": "Nuggets trailing 50-58. Jokic 12 reb. System predicts 2H surge."},
+    "NBA: Bucks @ Bulls": {"status": "LIVE (Q3)", "edge": "MIL -11.5", "conf": "91%", "intel": "Bucks lead 71-59. Giannis 22 pts. Interior mismatch holding firm."},
+    "NBA: Cavaliers @ Nets": {"status": "LIVE (Q2)", "edge": "CLE -4.5", "conf": "82%", "intel": "Nets lead 52-46. Cavs shooting cold from deep; model expects mean reversion."},
+    "NBA: 76ers @ Celtics": {"status": "8:00 PM ET", "edge": "BOS -9.5", "conf": "94%", "intel": "Embiid/George OUT. Boston is 39-22. System Pick: CELTICS -9.5."},
+    "NBA: Kings @ Lakers": {"status": "9:30 PM ET", "edge": "LAL -13.0", "conf": "85%", "intel": "Kings depth issues vs Lakers transition speed. System Pick: LAKERS -13.0."},
+    "NBA: Grizzlies @ Pacers": {"status": "5:00 PM ET", "edge": "IND -2.5", "conf": "80%", "intel": "Pacers home court rest advantage. Pick: PACERS -2.5."},
 
-# --- 3. THE WHALE PICK ---
-st.markdown("""
-<div class="whale-section">
-    <div style="color:#FFD700; font-weight:900; letter-spacing:2px;">🚨 SYNDICATE WHALE PICK</div>
-    <h2 style="margin:10px 0;">76ERS @ CELTICS (NBA)</h2>
-    <p style="font-size:1.1rem; color:#FFFFFF;"><b>THE PICK: BOSTON CELTICS -9.5</b></p>
-    <p style="color:#ADB5BD;">Philly is walking into a buzzsaw tonight. No Embiid means zero rim protection against Jaylen Brown. This is our highest confidence play for Sunday night.</p>
-</div>
-""", unsafe_allow_html=True)
+    # NHL SLATE
+    "NHL: Knights @ Penguins": {"status": "FINAL", "edge": "PIT ML", "conf": "WIN", "intel": "Penguins shutout Knights 2-0. Silovs 22 saves."},
+    "NHL: Blackhawks @ Utah Mammoth": {"status": "LIVE (P2)", "edge": "UTAH -1.5", "conf": "84%", "intel": "Mammoth trailing 0-1. Expect power play adjustment in P3."},
+    "NHL: Jets @ Sharks": {"status": "LIVE (P2)", "edge": "WPG ML", "conf": "89%", "intel": "Jets lead 1-0. Sharks struggling with zone entries."},
+    "NHL: Panthers @ Islanders": {"status": "6:30 PM ET", "edge": "FLA ML", "conf": "86%", "intel": "Islanders first home game since Olympic break. Pick: PANTHERS ML."},
 
-# --- 4. ON-DEMAND SYSTEM SCAN ---
-st.markdown('<div class="request-section">', unsafe_allow_html=True)
-st.subheader("🎯 ON-DEMAND SYSTEM SCAN")
-choice = st.selectbox("CHOOSE ANY MATCHUP ON THE BOARD:", list(master_data.keys()))
+    # NCAAB SLATE
+    "NCAAB: Michigan St @ Indiana": {"status": "3:45 PM ET", "edge": "MSU -2.5", "conf": "91%", "intel": "Sparty's defense vs Indiana's post-heavy usage. Pick: MSU -2.5."},
+    "NCAAB: Purdue @ Ohio St": {"status": "LIVE (H1)", "edge": "PUR -5.5", "conf": "87%", "intel": "Ohio St leading 36-31. Edey early foul trouble. System anticipates 2H bounce."},
 
-if st.button("EXECUTE DEEP SCAN"):
-    d = master_data[choice]
-    st.markdown(f"""
-    <div style="background:#0B0D10; padding:20px; border-radius:10px; border-left:4px solid #BF40FF; margin-top:15px;">
-        <h3 style="color:#BF40FF; margin-top:0;">{choice.upper()}</h3>
-        <p><b>STATUS:</b> {d['status']} | <b>VERDICT:</b> {d['edge']} ({d['conf']})</p>
-        <p><b>SYSTEM INTEL:</b> {d['intel']}</p>
-    </div>
-    """, unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+    # MLS SLATE
+    "MLS: Philadelphia @ NYCFC": {"status": "LIVE", "edge": "DRAW", "conf": "75%", "intel": "0-0 Defensive struggle at Subaru Park."},
+    "MLS: Orlando vs Inter Miami": {"status": "7:00 PM ET", "edge": "MIA ML", "conf": "83%", "intel": "Messi/Suarez starting. Orlando missing key CB. Pick: MIAMI ML."},
+    "MLS: Austin FC vs D.C. United": {"status": "9:30 PM ET", "edge": "ATX ML", "conf": "79%", "intel": "Austin 3-0 all-time vs DC. Home atmosphere at Q2 is elite. Pick: AUSTIN FC."},
 
-# --- 5. GLOBAL RADAR OVERVIEW (ALL SPORTS) ---
-st.markdown('<div class="sport-header">📡 GLOBAL RADAR (SUNDAY, MARCH 1)</div>', unsafe_allow_html=True)
-
-categories = ["TENNIS", "NBA", "NHL", "MLS"]
-for cat in categories:
-    st.write(f"--- **{cat} SLATE** ---")
-    for game, info in master_data.items():
-        if game.startswith(cat):
-            c1, c2, c3 = st.columns([2, 1, 1])
-            c1.write(f"**{game.split(': ')[1]}**")
-            c2.write(f"Status: {info['status']}")
-            c3.write(f"Edge: {info['edge']}")
-
-st.divider()
-st.link_button("🚀 JOIN THE PRIVATE SYNDICATE (WHOP)", "https://whop.com/YOUR_LINK", use_container_width=True)
+    # TENNIS SLATE
+    "TENNIS: WTA Austin Final": {"status": "LIVE", "edge": "STEARNS ML", "conf": "84%", "intel": "Stearns vs Townsend. Flat groundstrokes favor Stearns in these conditions."},
+    "TENNIS: Indian Wells Qualies": {"status": "LIVE", "edge": "GRINDERS", "conf": "88%", "intel": "Court speed is 4
