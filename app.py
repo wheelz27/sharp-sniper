@@ -1,82 +1,63 @@
 import streamlit as st
 
-# --- 1. SETTINGS & RADAR STYLING (THE "NO WHITE" FIX) ---
+# --- 1. SETTINGS & STEALTH STYLING ---
 st.set_page_config(page_title="EDGEINTEL | HUB", layout="wide")
 
 st.markdown("""
 <style>
-    /* GLOBAL DARK MODE */
     .stApp { background-color: #06090f !important; color: #c9d1d9 !important; }
-    
-    /* SPORT HEADERS */
     .sport-header { 
         background: linear-gradient(90deg, #1f6feb, transparent); 
         padding: 12px 20px; border-radius: 8px; margin: 25px 0 10px 0; 
         font-weight: 900; letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem;
     }
-
-    /* THE BUTTON FIX: MISSION CRITICAL */
+    /* GHOST BUTTONS (NO WHITE) */
     div.stButton > button {
-        background-color: transparent !important;
-        color: #58a6ff !important;
-        border: 1px solid #30363d !important;
-        border-radius: 4px !important;
-        width: 100% !important;
-        transition: all 0.3s ease !important;
-        font-size: 0.7rem !important;
-        font-weight: bold !important;
+        background-color: transparent !important; color: #58a6ff !important;
+        border: 1px solid #30363d !important; border-radius: 4px !important;
+        width: 100% !important; transition: all 0.3s ease !important;
+        font-size: 0.7rem !important; font-weight: bold !important;
     }
     div.stButton > button:hover {
-        border-color: #1f6feb !important;
-        background-color: rgba(31, 111, 235, 0.1) !important;
-        color: white !important;
-        box-shadow: 0 0 10px rgba(31, 111, 235, 0.4);
+        border-color: #1f6feb !important; background-color: rgba(31, 111, 235, 0.1) !important;
+        color: white !important; box-shadow: 0 0 10px rgba(31, 111, 235, 0.4);
     }
-
-    /* INTEL BOX */
     .intel-box {
         background-color: #0d1117; border: 1px solid #30363d;
-        border-left: 4px solid #238636; padding: 20px; border-radius: 8px;
-        margin: 10px 0; animation: fadeIn 0.4s;
+        border-left: 4px solid #238636; padding: 20px; border-radius: 8px; margin: 10px 0;
     }
     .live-tag { color: #f85149; font-weight: bold; font-size: 0.7rem; }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. LIVE SUNDAY DATA (MARCH 1, 2026) ---
-nba_data = [
-    {"TIME": "LIVE Q4", "GAME": "Spurs @ Knicks", "SCORE": "89 - 114", "EDGE": "2.7", "ID": "NBA_1", 
-     "WHY": "Knicks interior defense stifled Wemby. Model accurately projected a 15+ point defensive swing."},
-    {"TIME": "8:00 PM ET", "GAME": "76ers @ Celtics", "SCORE": "0 - 0", "EDGE": "2.3", "ID": "NBA_2",
-     "WHY": "Celtics 8-1 ATS at home. 76ers efficiency drops on B2B road games."},
+# --- 2. LIVE DATA HUB (MARCH 1, 2026) ---
+nba_games = [
+    {"TIME": "FINAL", "GAME": "Spurs @ Knicks", "SCORE": "89 - 114", "EDGE": "🎯 HIT", "ID": "NBA_1", "WHY": "Model projected a 15+ defensive swing. NYK stifled Wemby (22 turnovers caused)."},
+    {"TIME": "8:00 PM", "GAME": "76ers @ Celtics", "SCORE": "0 - 0", "EDGE": "2.3", "ID": "NBA_2", "WHY": "Celtics 39-20 record vs 76ers 33-26. Efficiency edge on home court."},
 ]
 
-tennis_data = [
-    {"TIME": "10:00 AM PST", "MATCH": "Indian Wells Qualies", "EDGE": "Hedge Opt", "ID": "TEN_1",
-     "WHY": "Surface playing 4% slower than 2025. Favor baseline grinders in early rounds."},
-    {"TIME": "2:00 PM UTC", "MATCH": "Mérida Open Final", "EDGE": "4.1%", "ID": "TEN_2",
-     "WHY": "Humidity factor impacting serve speed. Model favors the returner with high-spin RPM."},
+prop_snipes = [
+    {"PLAYER": "Luka Doncic", "PROP": "O 9.5 1Q PTS", "ODDS": "-115", "EDGE": "5-Star", "ID": "PROP_1", "WHY": "Luka averages 11.7 1Q points. Kings rank 28th in defensive rating."},
+    {"PLAYER": "Jarrett Allen", "PROP": "O 16.5 PTS", "ODDS": "-130", "EDGE": "A- Grade", "ID": "PROP_2", "WHY": "Facing Nets defense allowing 5th most points in the paint per game."},
 ]
 
 # --- 3. RENDER HUB ---
-st.title("📡 SYNDICATE MULTI-VIEW RADAR")
-st.markdown("**Sunday, March 1, 2026** | <span style='color:#238636;'>● DATA SYNCED</span>", unsafe_allow_html=True)
+st.title("📡 SYNDICATE COMMAND CENTER")
+st.caption("Sunday, March 1, 2026 | System Status: Active")
 
 # --- NBA SECTION ---
-st.markdown('<div class="sport-header">🏀 NBA INTELLIGENCE BOARD</div>', unsafe_allow_html=True)
-for game in nba_data:
-    col1, col2, col3, col4 = st.columns([1, 3, 1, 1])
-    col1.markdown(f"<span class='live-tag'>{game['TIME']}</span>", unsafe_allow_html=True)
-    col2.write(f"**{game['GAME']}** ({game['SCORE']})")
-    col3.write(f"Edge: {game['EDGE']}")
-    if col4.button("ANALYZE", key=game["ID"]):
-        st.markdown(f"""<div class="intel-box"><h4>🧠 DEEP INTEL: {game['GAME']}</h4><p>{game['WHY']}</p></div>""", unsafe_allow_html=True)
+st.markdown('<div class="sport-header">🏀 NBA LIVE BOARD</div>', unsafe_allow_html=True)
+for g in nba_games:
+    c1, c2, c3, c4 = st.columns([1, 3, 1, 1])
+    c1.markdown(f"<span class='live-tag'>{g['TIME']}</span>", unsafe_allow_html=True)
+    c2.write(f"**{g['GAME']}** ({g['SCORE']})")
+    c3.write(f"Edge: {g['EDGE']}")
+    if c4.button("ANALYZE", key=g["ID"]):
+        st.info(f"🧠 {g['WHY']}")
 
-# --- TENNIS SECTION ---
-st.markdown('<div class="sport-header">🎾 TENNIS RADAR (ATP/WTA)</div>', unsafe_allow_html=True)
-for match in tennis_data:
-    col1, col2, col3, col4 = st.columns([1, 3, 1, 1])
-    col1.write(game['TIME'])
-    col2.write(match['MATCH'])
-    col3.write(f"Edge: {match['EDGE']}")
-    if col4.button("ANALYZE", key=
+# --- PROP SNIPER SECTION ---
+st.markdown('<div class="sport-header">🎯 PROP SNIPER (HIGH CONFIDENCE)</div>', unsafe_allow_html=True)
+for p in prop_snipes:
+    c1, c2, c3, c4 = st.columns([1, 3, 1, 1])
+    c1.write("PROJECTION")
+    c2.write(f"**{
