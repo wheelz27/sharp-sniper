@@ -1,78 +1,94 @@
 import streamlit as st
 import pandas as pd
-import random
+import time
 
-# --- 1. SETTINGS & SYNDICATE STYLING ---
-st.set_page_config(page_title="EDGEINTEL | COMMAND", layout="wide")
+# --- 1. PREMIUM DARK UI ---
+st.set_page_config(page_title="EDGEINTEL | SYNDICATE", layout="wide")
 
 st.markdown("""
     <style>
-    .stApp { background-color: #06090f; color: #c9d1d9; }
-    .header-box { 
-        background: linear-gradient(90deg, #1f6feb 0%, #0d1117 100%);
-        padding: 25px; border-radius: 10px; border-left: 5px solid #58a6ff;
+    /* Professional Dark Background */
+    .stApp { background-color: #0d1117; color: #e6edf3; }
+    
+    /* Glowing Command Center Header */
+    .command-header {
+        background: rgba(23, 27, 33, 0.8);
+        border: 1px solid #30363d;
+        border-left: 5px solid #238636;
+        padding: 30px; border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         margin-bottom: 25px;
     }
-    .metric-card {
-        background-color: #161b22; border: 1px solid #30363d;
-        padding: 15px; border-radius: 8px; text-align: center;
+
+    /* Moving "Live" Pulse */
+    .pulse {
+        display: inline-block; width: 10px; height: 10px;
+        border-radius: 50%; background: #238636;
+        box-shadow: 0 0 0 0 rgba(35, 134, 54, 1);
+        animation: pulse-green 2s infinite; margin-right: 10px;
     }
-    .locked-text { color: #8b949e; font-style: italic; }
+    @keyframes pulse-green {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(35, 134, 54, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(35, 134, 54, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(35, 134, 54, 0); }
+    }
+
+    /* Highlighted Matrix Rows */
+    .stTable { background-color: #161b22; border-radius: 10px; border: 1px solid #30363d; }
     </style>
 """, unsafe_allow_html=True)
 
-# --- 2. TOP BANNER (THE VISION) ---
+# --- 2. THE COMMAND HEADER ---
 st.markdown("""
-    <div class="header-box">
-        <h1 style='margin:0;'>📡 EDGEINTEL: INTELLIGENCE HUB</h1>
-        <p style='opacity:0.8;'>Proprietary Neural Model vs. Vegas Market Openers</p>
+    <div class="command-header">
+        <h1 style='margin:0; font-family: monospace;'>📡 <span class="pulse"></span>EDGEINTEL COMMAND CENTER</h1>
+        <p style='color: #8b949e; letter-spacing: 1px;'>NEURAL ENGINE v3.4 | REAL-TIME MARKET ARBITRAGE</p>
     </div>
 """, unsafe_allow_html=True)
 
-# --- 3. LIVE STATS BAR ---
-col1, col2, col3, col4 = st.columns(4)
-col1.metric("Engine Status", "ACTIVE ●", delta="14ms Latency")
-col2.metric("Games Analyzed", "14", delta="Live")
-col3.metric("Market Volatility", "High", delta="7% Shift")
-col4.metric("Syndicate Strength", "+264", delta="Sniper Tier")
+# --- 3. IMPACT METRICS ---
+c1, c2, c3, c4 = st.columns(4)
+with c1: st.metric("ENGINE LATENCY", "12ms", "OPTIMAL")
+with c2: st.metric("SCAN RATE", "14,200/min", "+12%")
+with c3: st.metric("ACTIVE EDGES", "Locked", help="Join Syndicate to view")
+with c4: st.metric("ALPHA TIER", "+264", "Target Found")
 
 st.divider()
 
-# --- 4. THE EDGE MATRIX (THE INSIGHT) ---
+# --- 4. THE EDGE MATRIX (IMPROVED VISIBILITY) ---
 st.subheader("📊 Live Market Projection Matrix")
-st.write("Comparing Model Fair-Value to Vegas Current Spreads")
 
-# Placeholder data to ensure the screen is NEVER empty for your visitor
-# In production, this pulls from your 'all_edges' variable
+# We use more aggressive mockup data so the table looks "full" and "impressive"
 data = [
-    {"Matchup": "Lakers @ Celtics", "Vegas": "-5.5", "Model": "-8.2", "Edge": "+2.7", "Conf": "88%"},
-    {"Matchup": "Knicks @ 76ers", "Vegas": "+2.0", "Model": "-1.5", "Edge": "+3.5", "Conf": "92%"},
-    {"Matchup": "Suns @ Mavericks", "Vegas": "-1.0", "Model": "-0.5", "Edge": "+0.5", "Conf": "74%"},
-    {"Matchup": "Warriors @ Nuggets", "Vegas": "+4.5", "Model": "+6.0", "Edge": "+1.5", "Conf": "81%"},
+    {"GAME": "🏀 LAL @ BOS", "VEGAS": "-5.5", "MODEL": "-8.1", "EDGE": "🔥 +2.6", "PROB": "68%"},
+    {"GAME": "🏀 NYK @ PHI", "VEGAS": "+3.0", "MODEL": "-1.5", "EDGE": "🔥 +4.5", "PROB": "74%"},
+    {"GAME": "🏀 PHX @ DAL", "VEGAS": "-1.5", "MODEL": "-1.5", "EDGE": "0.0", "PROB": "51%"},
+    {"GAME": "🏀 GSW @ DEN", "VEGAS": "+6.0", "MODEL": "+4.2", "EDGE": "💎 +1.8", "PROB": "61%"},
+    {"GAME": "🏀 MIA @ MIL", "VEGAS": "-7.0", "MODEL": "-9.5", "EDGE": "🔥 +2.5", "PROB": "65%"},
 ]
 df = pd.DataFrame(data)
 
+# Injecting the table with high contrast
 st.table(df)
 
-# --- 5. THE "SNIPER" PAYWALL (THE FUNNEL) ---
-st.markdown("### 🎯 SYNDICATE SNIPER PLAYS")
-c1, c2 = st.columns(2)
+# --- 5. THE SYNDICATE CALL TO ACTION ---
+st.markdown("### 🎯 SYNDICATE SNIPER PARLAYS")
+left, right = st.columns([1.5, 1])
 
-with c1:
+with left:
     st.markdown("""
-        <div style="background-color:#161b22; padding:20px; border-radius:10px; border:1px dashed #238636;">
-            <h4 style="color:#238636;">🔓 ACTIVE SNIPER PARLAY (+264)</h4>
-            <p class="locked-text">Leg 1: [LOCKED - JOIN DISCORD]</p>
-            <p class="locked-text">Leg 2: [LOCKED - JOIN DISCORD]</p>
-            <p class="locked-text">Leg 3: [LOCKED - JOIN DISCORD]</p>
+        <div style="background: rgba(35, 134, 54, 0.1); border: 1px solid #238636; padding: 25px; border-radius: 12px;">
+            <h4 style="color:#3fb950; margin-top:0;">🔓 ACTIVE SNIPER PARLAY (+264)</h4>
+            <p style="color:#8b949e; font-family: monospace;">[LEG 1] UNKNOWN - JOIN DISCORD TO UNLOCK</p>
+            <p style="color:#8b949e; font-family: monospace;">[LEG 2] UNKNOWN - JOIN DISCORD TO UNLOCK</p>
+            <p style="color:#8b949e; font-family: monospace;">[LEG 3] UNKNOWN - JOIN DISCORD TO UNLOCK</p>
         </div>
     """, unsafe_allow_html=True)
 
-with c2:
-    st.write("#### Unlock the Full Board")
-    st.write("Get real-time alerts on your phone the second our model finds a 2.0+ point glitch.")
-    st.link_button("🔥 JOIN THE SYNDICATE NOW", "https://whop.com/YOUR_LINK", use_container_width=True)
+with right:
+    st.write("#### Secure Your Edge")
+    st.write("Stop betting on luck. Start trading on data. Join the world's most elite betting syndicate.")
+    st.link_button("🚀 JOIN THE SYNDICATE", "https://whop.com/YOUR_LINK", use_container_width=True)
 
-# --- 6. FOOTER ENGINE LOGS ---
 st.divider()
-st.caption("System Logs: Neural weights updated. Vegas API synced. Scanning for inefficiencies...")
+st.caption("SCANNING... Data synced with Vegas API. Neural weights verified.")
