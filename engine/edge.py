@@ -23,10 +23,10 @@ logger = logging.getLogger("edgeintel.edge")
 # ─────────────────────────────────────────────
 # PRODUCTION GUARDRAILS
 # ─────────────────────────────────────────────
-MAX_EDGE_POINTS = 10.0          # Any edge > 10 pts = data error, not opportunity
+MAX_EDGE_POINTS = 15.0          # Any edge > 10 pts = data error, not opportunity
 MAX_SPREAD_ABS = 30.0           # No realistic spread exceeds ±30
 MAX_TOTAL = 300.0               # No realistic total exceeds 300
-MIN_TOTAL = 150.0               # No realistic total below 150
+MIN_TOTAL = 110.0               # No realistic total below 150
 MAX_INJURY_IMPACT = 12.0        # Injury adjustment cap
 
 
