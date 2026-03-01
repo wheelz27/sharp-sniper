@@ -75,4 +75,3 @@ for cat in ["NBA", "NHL", "MLS", "TENNIS"]:
     st.divider()
 
 st.link_button("🚀 UNLOCK FULL SYNDICATE ACCESS", "
-               
