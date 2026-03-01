@@ -1,13 +1,16 @@
 import streamlit as st
 import pandas as pd
 import random
+import json
 from datetime import datetime, timezone
-import time
 
+# -----------------------------
+# PAGE CONFIG
+# -----------------------------
 st.set_page_config(page_title="EDGEINTEL | COMMAND CENTER", layout="wide")
 
 # -----------------------------
-# CINEMATIC CSS (glow, motion, typography, panels)
+# CINEMATIC CSS
 # -----------------------------
 st.markdown("""
 <style>
@@ -68,7 +71,7 @@ header{ visibility:hidden; }
   content:"";
   position:absolute;
   left:50%; top:50%;
-  width:10px; height:10px;
+  width: 10px; height: 10px;
   transform: translate(-50%,-50%);
   border-radius:999px;
   background: rgba(35,134,54,0.35);
@@ -117,40 +120,12 @@ header{ visibility:hidden; }
 }
 .section-title{ font-size:16px; font-weight:900; margin: 8px 0 10px 0; }
 
-/* AI Analyst */
-.ai-card{
-  border-radius: 22px;
+/* Dossier */
+.dossier{
+  border-radius: 20px;
   padding: 16px;
-  background: linear-gradient(135deg, rgba(88,166,255,0.12), rgba(13,17,23,0.60));
+  background: linear-gradient(135deg, rgba(88,166,255,0.10), rgba(13,17,23,0.60));
   border: 1px solid rgba(88,166,255,0.22);
-}
-.ai-head{
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-}
-.ai-name{
-  font-size: 14px;
-  font-weight: 900;
-  letter-spacing:.4px;
-}
-.ai-status{
-  font-size: 12px;
-  opacity: .85;
-}
-.ai-text{
-  margin-top: 10px;
-  font-size: 14px;
-  line-height: 1.6;
-  opacity: .92;
-}
-.mini{ font-size: 12px; opacity:.78; }
-
-/* Typewriter (JS inject) container */
-#typebox{
-  white-space: pre-wrap;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-  font-size: 13px;
-  line-height: 1.55;
-  color: #c9d1d9;
 }
 
 /* Responsive */
@@ -161,7 +136,7 @@ header{ visibility:hidden; }
 """, unsafe_allow_html=True)
 
 # -----------------------------
-# DATA
+# DATA (swap with your real all_edges later)
 # -----------------------------
 def build_edges(exec_mode: bool) -> pd.DataFrame:
     if exec_mode:
@@ -174,10 +149,10 @@ def build_edges(exec_mode: bool) -> pd.DataFrame:
         ]
     else:
         rows = [
-            {"Game": "LAL @ BOS", "Market":"Spread", "Vegas": -5.5, "Model": -8.2, "EdgePts": 2.7, "Conf": 0.88, "Vol":"High"},
-            {"Game": "NYK @ PHI", "Market":"Spread", "Vegas": +2.0, "Model": -1.5, "EdgePts": 3.5, "Conf": 0.92, "Vol":"High"},
-            {"Game": "PHX @ DAL", "Market":"Spread", "Vegas": -1.0, "Model": -0.5, "EdgePts": 0.5, "Conf": 0.74, "Vol":"Med"},
-            {"Game": "GSW @ DEN", "Market":"Spread", "Vegas": +4.5, "Model": +6.0, "EdgePts": 1.5, "Conf": 0.81, "Vol":"Med"},
+            {"Game":"LAL @ BOS","Market":"Spread","Vegas":-5.5,"Model":-8.2,"EdgePts":2.7,"Conf":0.88,"Vol":"High"},
+            {"Game":"NYK @ PHI","Market":"Spread","Vegas":+2.0,"Model":-1.5,"EdgePts":3.5,"Conf":0.92,"Vol":"High"},
+            {"Game":"PHX @ DAL","Market":"Spread","Vegas":-1.0,"Model":-0.5,"EdgePts":0.5,"Conf":0.74,"Vol":"Med"},
+            {"Game":"GSW @ DEN","Market":"Spread","Vegas":+4.5,"Model":+6.0,"EdgePts":1.5,"Conf":0.81,"Vol":"Med"},
         ]
 
     df = pd.DataFrame(rows)
@@ -202,12 +177,239 @@ def build_edges(exec_mode: bool) -> pd.DataFrame:
     ]
     df["WhyTag"] = [random.choice(why) for _ in range(len(df))]
 
-    # Rank score (single “executive” number)
-    # score = edge * confidence * volatility weight
     vol_w = df["Vol"].map({"High":1.08,"Med":1.00,"Low":0.96}).fillna(1.0)
     df["Score"] = (df["EdgePts"] * df["Conf"] * 100 * vol_w).round(1)
 
     return df.sort_values("Score", ascending=False).reset_index(drop=True)
+
+# -----------------------------
+# FLOATING SCOTTY WIDGET (voice + quick actions)
+# -----------------------------
+def render_scotty_widget(picks: list[dict], raiders_mode: bool = True):
+    payload = json.dumps(picks).replace("</", "<\\/")
+
+    raiders_badge = "☠️ RAIDERS NATION" if raiders_mode else "OPERATOR MODE"
+
+    html = f"""
+    <style>
+      #scotty-fab {{
+        position: fixed; right: 18px; bottom: 18px; z-index: 99999;
+        border-radius: 999px; padding: 12px 14px; cursor: pointer; user-select: none;
+        background: rgba(13,17,23,0.80);
+        border: 1px solid rgba(88,166,255,0.35);
+        box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+        backdrop-filter: blur(10px);
+        color: #c9d1d9;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+        display: flex; align-items: center; gap: 10px;
+      }}
+      #scotty-fab .dot {{
+        width: 10px; height: 10px; border-radius: 999px;
+        background: #238636;
+        box-shadow: 0 0 14px rgba(35,134,54,0.85);
+        position: relative;
+      }}
+      #scotty-fab .dot:after {{
+        content:"";
+        position:absolute; left:50%; top:50%;
+        width: 10px; height: 10px;
+        transform: translate(-50%,-50%);
+        border-radius:999px;
+        background: rgba(35,134,54,0.35);
+        animation: ping 1.2s infinite;
+      }}
+      @keyframes ping {{
+        0% {{ width:10px; height:10px; opacity:.6; }}
+        80% {{ width:34px; height:34px; opacity:0; }}
+        100% {{ opacity:0; }}
+      }}
+
+      #scotty-panel {{
+        position: fixed; right: 18px; bottom: 72px;
+        width: 360px; max-width: calc(100vw - 36px);
+        z-index: 99999; display: none;
+        border-radius: 18px; overflow: hidden;
+        background: rgba(13,17,23,0.82);
+        border: 1px solid rgba(255,255,255,0.10);
+        box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+        backdrop-filter: blur(14px);
+        color: #c9d1d9;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      }}
+      #scotty-head {{
+        padding: 12px 14px;
+        display:flex; align-items:center; justify-content:space-between; gap:10px;
+        background: linear-gradient(135deg, rgba(31,111,235,0.25), rgba(13,17,23,0.0));
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }}
+      #scotty-name {{ font-weight: 900; letter-spacing: .4px; font-size: 13px; }}
+      #scotty-badge {{
+        font-size: 11px; opacity: .9; padding: 4px 8px; border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(255,255,255,0.04);
+        white-space: nowrap;
+      }}
+      #scotty-close {{ cursor:pointer; opacity:.75; font-weight:900; }}
+
+      #scotty-body {{ padding: 12px 14px 14px 14px; }}
+      #scotty-body .mini {{
+        font-size: 12px; opacity: .80; margin-bottom: 10px; line-height: 1.5;
+      }}
+      #scotty-select {{
+        width: 100%;
+        padding: 10px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(255,255,255,0.04);
+        color: #c9d1d9;
+        outline: none;
+      }}
+      #scotty-actions {{
+        display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;
+      }}
+      .sc-btn {{
+        padding: 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(88,166,255,0.25);
+        background: rgba(31,111,235,0.10);
+        color: #c9d1d9;
+        cursor: pointer;
+        font-weight: 800;
+      }}
+      .sc-btn.secondary {{
+        border-color: rgba(35,134,54,0.30);
+        background: rgba(35,134,54,0.10);
+      }}
+      #scotty-out {{
+        margin-top: 12px;
+        padding: 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(0,0,0,0.18);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+        font-size: 12px;
+        line-height: 1.55;
+        white-space: pre-wrap;
+      }}
+    </style>
+
+    <div id="scotty-panel">
+      <div id="scotty-head">
+        <div>
+          <div id="scotty-name">SCOTTY // FLOATING ANALYST</div>
+          <div style="font-size:11px; opacity:.75;">Live briefings • no noise</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div id="scotty-badge">{raiders_badge}</div>
+          <div id="scotty-close">✕</div>
+        </div>
+      </div>
+
+      <div id="scotty-body">
+        <div class="mini">
+          Pick a game. I’ll brief you instantly (text + voice).<br/>
+          <span style="opacity:.65;">Voice uses your browser. No Discord required.</span>
+        </div>
+
+        <select id="scotty-select"></select>
+
+        <div id="scotty-actions">
+          <button class="sc-btn" id="sc-brief">🔊 Brief</button>
+          <button class="sc-btn secondary" id="sc-top">⚡ Top Edge</button>
+          <button class="sc-btn" id="sc-risk">⚠️ Risk Only</button>
+          <button class="sc-btn secondary" id="sc-why">🧠 Why</button>
+        </div>
+
+        <div id="scotty-out">Ready.</div>
+      </div>
+    </div>
+
+    <div id="scotty-fab">
+      <span class="dot"></span>
+      <div style="font-weight:900;">SCOTTY</div>
+      <div style="font-size:12px; opacity:.75;">AI Brief</div>
+    </div>
+
+    <script>
+      const picks = {payload};
+
+      const panel = document.getElementById("scotty-panel");
+      const fab = document.getElementById("scotty-fab");
+      const closeBtn = document.getElementById("scotty-close");
+      const sel = document.getElementById("scotty-select");
+      const out = document.getElementById("scotty-out");
+
+      function openPanel() {{
+        panel.style.display = (panel.style.display === "none" || panel.style.display === "") ? "block" : "none";
+      }}
+      fab.addEventListener("click", openPanel);
+      closeBtn.addEventListener("click", () => panel.style.display = "none");
+
+      function speak(text) {{
+        if (!('speechSynthesis' in window)) {{
+          out.innerText = "Voice not supported on this browser.";
+          return;
+        }}
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 1.02;
+        u.pitch = 0.92;
+        u.volume = 1.0;
+        window.speechSynthesis.speak(u);
+      }}
+
+      function renderSelect() {{
+        sel.innerHTML = "";
+        picks.forEach((p, i) => {{
+          const opt = document.createElement("option");
+          opt.value = String(i);
+          opt.textContent = `${{p.tier}} • ${{p.game}} • Edge ${{p.edge}} • Conf ${{p.conf}}`;
+          sel.appendChild(opt);
+        }});
+      }}
+
+      function current() {{
+        const idx = parseInt(sel.value || "0", 10);
+        return picks[Math.max(0, Math.min(idx, picks.length - 1))];
+      }}
+
+      function setOut(text) {{
+        out.innerText = text;
+      }}
+
+      renderSelect();
+
+      document.getElementById("sc-brief").addEventListener("click", () => {{
+        const p = current();
+        const t = p.brief || `${{p.game}}. Edge ${{p.edge}}. Confidence ${{p.conf}}. Tier ${{p.tier}}. Why: ${{p.why}}`;
+        setOut(t);
+        speak(t);
+      }});
+
+      document.getElementById("sc-top").addEventListener("click", () => {{
+        sel.value = "0";
+        const p = current();
+        const t = `Top edge is ${{p.game}}. Edge ${{p.edge}}. Confidence ${{p.conf}}. Tier ${{p.tier}}.`;
+        setOut(t);
+        speak(t);
+      }});
+
+      document.getElementById("sc-risk").addEventListener("click", () => {{
+        const p = current();
+        const t = p.risk || "Risk: volatility elevated — execute early. Do not chase.";
+        setOut(t);
+        speak(t);
+      }});
+
+      document.getElementById("sc-why").addEventListener("click", () => {{
+        const p = current();
+        const t = `Why: ${{p.why}}`;
+        setOut(t);
+        speak(t);
+      }});
+    </script>
+    """
+    st.components.v1.html(html, height=0)
 
 # -----------------------------
 # SIDEBAR
@@ -215,17 +417,17 @@ def build_edges(exec_mode: bool) -> pd.DataFrame:
 with st.sidebar:
     st.markdown("### Executive Controls")
     exec_mode = st.toggle("EXEC DEMO MODE (always impressive)", value=True)
-    voice_on = st.toggle("🔊 AI Voice (talking briefings)", value=True)
+    raiders_mode = st.toggle("☠️ Raiders Nation badge", value=True)
     min_edge = st.slider("Min Edge (pts)", 0.0, 5.0, 1.5, 0.5)
     min_conf = st.slider("Min Confidence (%)", 50, 99, 85, 1)
     st.divider()
-    st.markdown("### Delivery Layer")
-    st.caption("Discord is optional. This is a modular alert stack.")
-    st.write("✅ Web (dashboard)")
-    st.write("✅ Voice (on-screen)")
-    st.write("➜ Email/SMS/Push next")
+    st.caption("Voice briefings run locally in the browser. No Discord required for this demo.")
 
+# -----------------------------
+# BUILD DATA
+# -----------------------------
 df = build_edges(exec_mode)
+filtered = df[(df["EdgePts"] >= min_edge) & (df["ConfPct"] >= min_conf)].copy()
 
 # -----------------------------
 # HERO + KPIs
@@ -277,82 +479,68 @@ st.markdown(f"""
 st.write("")
 
 # -----------------------------
-# FILTER + EDGE BOARD
+# EDGE BOARD
 # -----------------------------
-filtered = df[(df["EdgePts"] >= min_edge) & (df["ConfPct"] >= min_conf)].copy()
-
 st.markdown('<div class="section-title">📊 Edge Board (Ranked Intelligence)</div>', unsafe_allow_html=True)
 st.markdown('<div class="panel">', unsafe_allow_html=True)
 
-show_df = filtered.copy()
-show_df["Vegas"] = show_df["Vegas"].map(lambda x: f"{x:+.1f}")
-show_df["Model"] = show_df["Model"].map(lambda x: f"{x:+.1f}")
-show_df["EdgePts"] = show_df["EdgePts"].map(lambda x: f"+{x:.1f}")
-show_df = show_df[["Score","Game","Market","Vegas","Model","EdgePts","ConfPct","Tier","WhyTag","Freshness","ModelVer"]]
+if len(filtered) == 0:
+    st.warning("No edges match your filters. Lower thresholds or keep EXEC DEMO MODE on.")
+else:
+    show_df = filtered.copy()
+    show_df["Vegas"] = show_df["Vegas"].map(lambda x: f"{x:+.1f}")
+    show_df["Model"] = show_df["Model"].map(lambda x: f"{x:+.1f}")
+    show_df["EdgePts"] = show_df["EdgePts"].map(lambda x: f"+{x:.1f}")
+    show_df = show_df[["Score","Game","Market","Vegas","Model","EdgePts","ConfPct","Tier","WhyTag","Freshness","ModelVer"]]
 
-st.dataframe(
-    show_df,
-    use_container_width=True,
-    hide_index=True,
-    column_config={
-        "ConfPct": st.column_config.ProgressColumn("Confidence", format="%d%%", min_value=0, max_value=100),
-        "WhyTag": st.column_config.TextColumn("Why (headline)"),
-        "ModelVer": st.column_config.TextColumn("Model"),
-        "Freshness": st.column_config.TextColumn("Data"),
-    }
-)
+    st.dataframe(
+        show_df,
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "ConfPct": st.column_config.ProgressColumn("Confidence", format="%d%%", min_value=0, max_value=100),
+            "WhyTag": st.column_config.TextColumn("Why (headline)"),
+            "ModelVer": st.column_config.TextColumn("Model"),
+            "Freshness": st.column_config.TextColumn("Data"),
+        }
+    )
 
 st.markdown("</div>", unsafe_allow_html=True)
 
 # -----------------------------
-# PICK DOSSIER + AI ANALYST (TALKING)
+# PICK DOSSIER + SAFE CHART (NO MATPLOTLIB)
 # -----------------------------
 st.write("")
 left, right = st.columns([1.25, 1])
 
-if len(filtered) == 0:
-    with left:
-        st.warning("No edges match your filters. Lower thresholds or enable EXEC DEMO MODE.")
-else:
+if len(filtered) > 0:
     pick = st.selectbox("Select a pick to open the dossier", filtered["Game"].tolist())
     row = filtered[filtered["Game"] == pick].iloc[0]
 
-    # Analyst narrative (tight, operator style)
     direction = "Model leans AWAY" if float(row["Model"]) > float(row["Vegas"]) else "Model leans HOME"
-    edge_strength = "SNIPER-GRADE" if row["Tier"] == "SNIPER" else ("PRIMARY" if row["Tier"] == "PRIMARY" else "SECONDARY")
     risk_note = random.choice([
-        "Risk: volatility high — execute early or skip late movement.",
+        "Risk: volatility elevated — execute early or skip late movement.",
         "Risk: injury confirmation may compress edge — monitor feed.",
-        "Risk: public money can swing — wait for retrace if line spikes.",
-        "Risk: edge is timing-sensitive — do not chase.",
+        "Risk: public money can swing — avoid chasing the worst number.",
+        "Risk: timing sensitive — do not chase after line corrects.",
     ])
     exec_guide = random.choice([
-        "Execution: take it only if edge stays ≥ threshold at entry.",
-        "Execution: scale small, increase only if line holds value.",
+        "Execution: take only if edge holds above threshold at entry.",
+        "Execution: scale small, increase only if market doesn’t correct.",
         "Execution: avoid late chase — value evaporates fast.",
-        "Execution: if market corrects, downgrade tier immediately.",
+        "Execution: downgrade immediately if edge shrinks.",
     ])
 
-    briefing = (
-        f"Analyst briefing. {pick}. "
-        f"Vegas is {float(row['Vegas']):+.1f}. Model fair value is {float(row['Model']):+.1f}. "
-        f"Edge is plus {float(row['EdgePts']):.1f} points with confidence {int(row['ConfPct'])} percent. "
-        f"Tier is {row['Tier']}. {direction}. "
-        f"Reason: {row['WhyTag']}. "
-        f"{risk_note} {exec_guide}"
-    )
-
-    # Dossier panel
     with left:
         st.markdown('<div class="section-title">🧾 Pick Dossier</div>', unsafe_allow_html=True)
         st.markdown(f"""
-        <div class="panel">
+        <div class="dossier">
           <div style="font-size:12px; opacity:0.78;">{row['Tier']} • SCORE {row['Score']} • {row['ModelVer']} • Data {row['Freshness']}</div>
           <div style="font-size:22px; font-weight:900; margin-top:6px;">{pick}</div>
           <div style="margin-top:10px; line-height:1.7;">
             <b>Vegas:</b> {float(row['Vegas']):+.1f} • <b>Model:</b> {float(row['Model']):+.1f} • <b>Edge:</b> +{float(row['EdgePts']):.1f} pts<br/>
             <b>Confidence:</b> {int(row['ConfPct'])}% • <b>Volatility:</b> {row['Vol']} • <b>Lean:</b> {direction}<br/>
-            <b>Driver:</b> {row['WhyTag']}<br/>
+            <b>Driver:</b> {row['WhyTag']}
           </div>
           <div style="margin-top:10px; font-size:12px; opacity:0.82;">
             {risk_note}<br/>
@@ -361,7 +549,6 @@ else:
         </div>
         """, unsafe_allow_html=True)
 
-        # Small “memo” block for copy/paste
         with st.expander("Copy / Paste Executive Memo"):
             st.code(
                 f"""EDGEINTEL DOSSIER — {pick}
@@ -381,76 +568,19 @@ EXEC: {exec_guide}
                 language="text"
             )
 
-    # AI Analyst panel with voice + typewriter
     with right:
-        st.markdown('<div class="section-title">🤖 AI Analyst — Live Brief</div>', unsafe_allow_html=True)
-
-        # Typewriter via injected JS (keeps it cinematic)
-        typewriter_html = f"""
-        <div class="ai-card">
-          <div class="ai-head">
-            <div class="ai-name">SYNDICATE ANALYST</div>
-            <div class="ai-status">STATUS: LIVE • MODE: EXEC BRIEF</div>
-          </div>
-          <div class="mini">Press briefing to speak. (Voice uses your browser — no Discord needed.)</div>
-          <div style="margin-top:10px;" id="typebox"></div>
-        </div>
-
-        <script>
-          const text = `{briefing.replace("`","'")}`;
-          const box = document.getElementById("typebox");
-          box.innerText = "";
-          let i = 0;
-          function type() {{
-            if (i < text.length) {{
-              box.innerText += text.charAt(i);
-              i++;
-              setTimeout(type, 12);
-            }}
-          }}
-          type();
-
-          function speakNow() {{
-            if (!('speechSynthesis' in window)) {{
-              alert("Speech synthesis not supported in this browser.");
-              return;
-            }}
-            window.speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(text);
-            u.rate = 1.03;
-            u.pitch = 0.95;
-            u.volume = 1.0;
-            window.speechSynthesis.speak(u);
-          }}
-          window.__EDGEINTEL_SPEAK__ = speakNow;
-        </script>
-        """
-        st.components.v1.html(typewriter_html, height=290)
-
-        # Buttons (Streamlit → calls the JS function)
-        cA, cB = st.columns(2)
-        with cA:
-            if st.button("🔊 AI Briefing (Speak)", use_container_width=True, disabled=not voice_on):
-                st.components.v1.html("<script>window.__EDGEINTEL_SPEAK__ && window.__EDGEINTEL_SPEAK__();</script>", height=0)
-
-        with cB:
-            st.button("🛰️ Alert Test (Simulated)", use_container_width=True)
-
-        # Tiny “threat-level” feel with a simple chart
-        st.write("")
         st.markdown('<div class="section-title">📈 Signal Strength</div>', unsafe_allow_html=True)
         x = list(range(10))
-        base = row["ConfPct"]
+        base = int(row["ConfPct"])
         y = [max(50, min(99, base + random.randint(-6, 6))) for _ in x]
-        fig = plt.figure()
-        plt.plot(x, y)
-        plt.title("Confidence Trend (Last 10 ticks)")
-        plt.xlabel("tick")
-        plt.ylabel("confidence")
-        st.pyplot(fig, clear_figure=True)
+        chart_df = pd.DataFrame({"confidence": y}, index=x)
+        st.line_chart(chart_df)
+else:
+    with left:
+        st.info("No dossier available until at least one pick matches the filters.")
 
 # -----------------------------
-# AUDIT LOG (credibility anchor)
+# AUDIT LOG
 # -----------------------------
 st.write("")
 st.markdown('<div class="section-title">🧬 Audit Trail</div>', unsafe_allow_html=True)
@@ -474,4 +604,26 @@ for _ in range(7):
 st.dataframe(pd.DataFrame(log_rows), use_container_width=True, hide_index=True)
 
 st.markdown("</div>", unsafe_allow_html=True)
-st.caption("NOTE: Voice briefing runs locally in the browser. No Discord required for the demo.")
+st.caption("Voice briefings run locally in the browser. Floating SCOTTY widget is client-side and cannot crash the app.")
+
+# -----------------------------
+# BUILD SCOTTY WIDGET DATA + RENDER FLOATING WIDGET
+# -----------------------------
+picks = []
+src_df = filtered if len(filtered) > 0 else df
+for _, r in src_df.head(8).iterrows():
+    picks.append({
+        "game": r["Game"],
+        "tier": r["Tier"],
+        "edge": f"+{float(r['EdgePts']):.1f}",
+        "conf": f"{int(r['ConfPct'])}%",
+        "why": r.get("WhyTag", "Model fair-value differs from market."),
+        "risk": "Risk: volatility elevated — execute early. Do not chase late movement.",
+        "brief": (
+            f"{r['Game']}. Vegas {float(r['Vegas']):+.1f}. Model {float(r['Model']):+.1f}. "
+            f"Edge plus {float(r['EdgePts']):.1f} points. Confidence {int(r['ConfPct'])} percent. "
+            f"Tier {r['Tier']}. Why: {r.get('WhyTag','')}"
+        ),
+    })
+
+render_scotty_widget(picks, raiders_mode=raiders_mode)
