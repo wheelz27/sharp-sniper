@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 st.set_page_config(page_title="EDGEINTEL | COMMAND CENTER", layout="wide")
 
 # -----------------------------
-# CINEMATIC CSS (same as before)
+# CINEMATIC CSS
 # -----------------------------
 st.markdown("""
 <style>
@@ -322,4 +322,18 @@ with st.sidebar:
 # -----------------------------
 # BUILD DATA + EXECUTION
 # -----------------------------
-df = build_edges(exec_mode
+df = build_edges(exec_mode)
+filtered = df[(df["EdgePts"] >= min_edge) & (df["ConfPct"] >= min_conf)].copy()
+
+# -----------------------------
+# HERO + KPIs
+# -----------------------------
+now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%SZ")
+latency_ms = random.randint(9, 21)
+scan_rate = f"{random.randint(12000, 18200):,}/min"
+vol = "ELEVATED" if (df["Vol"] == "High").any() else "NORMAL"
+active = int((df["EdgePts"] >= 2.0).sum())
+
+st.markdown(f"""
+<div class="hero">
+  <div class="h-title"><span class="pulse"></span> EDGEINTEL — INTELLIGENCE COMMAND</div
