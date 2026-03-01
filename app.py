@@ -36,11 +36,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. LIVE REPOSITORY (MARCH 1, 2026) ---
+# --- 2. LIVE DATA REPOSITORY (MARCH 1, 2026) ---
 all_games = {
     "76ers @ Celtics": {
         "status": "8:00 PM ET", "edge": "BOS -9.5", "conf": "94%",
-        "intel": "Line moved from -4.5 to -9.5 with Embiid & George OUT. Jaylen Brown averaging 29.1 PPG without Tatum. System Pick: CELTICS -9.5."
+        "intel": "Line moved from -4.5 to -9.5 with Embiid & George OUT. Boston net rating at home is +14.2 against teams missing primary rim protection. System Pick: CELTICS -9.5."
     },
     "Bucks @ Bulls": {
         "status": "LIVE (HALF)", "edge": "MIL -15.5", "conf": "89%",
@@ -52,7 +52,7 @@ all_games = {
     },
     "Kings @ Lakers": {
         "status": "9:30 PM ET", "edge": "LAL -13.5", "conf": "82%",
-        "intel": "Lakers are 13-point favorites. Kings missing depth in rotation. System Pick: LAKERS -13.5."
+        "intel": "Lakers are massive favorites as Kings manage rotation depth issues. System Pick: LAKERS -13.5."
     }
 }
 
@@ -60,4 +60,4 @@ all_games = {
 st.markdown("""
 <div class="whale-section">
     <div style="color:#FFD700; font-weight:900; letter-spacing:2px;">🚨 FEATURED WHALE PICK</div>
-    <h
+    <h2 style="margin:10px
