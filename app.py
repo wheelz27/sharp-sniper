@@ -29,31 +29,31 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. LIVE DATA: SUNDAY, MARCH 1, 2026 ---
+# --- 2. LIVE MARCH 1, 2026 DATA ---
 master_data = {
     "NBA": [
-        {"game": "76ers @ Celtics", "spread": "BOS -9.5", "prop": "J. Brown O 29.5 PTS", "intel": "Tatum (Achilles) OUT. Embiid (Oblique) OUT. Jaylen Brown usage rate is 38.4% without Tatum on the floor."},
-        {"game": "Bucks @ Bulls", "spread": "CHI +2.5", "prop": "M. Buzelis O 18.5 PTS", "intel": "Giannis (Calf) OUT. Milwaukee's interior defense rating drops significantly. Bulls home dog edge."},
-        {"game": "Kings @ Lakers", "spread": "LAL -13.0", "prop": "Luka O 10.5 AST", "intel": "Luka/LeBron ACTIVE. Kings in full tank mode. Lakers transition efficiency is league-high tonight."}
+        {"game": "76ers @ Celtics", "spread": "BOS -9.5", "prop": "J. Brown O 27.5 PTS", "intel": "Tatum (Achilles) OUT. Embiid/George OUT. Jaylen Brown averaging 29.1 PPG solo this season."},
+        {"game": "Knicks @ Spurs", "spread": "SAS -1.5", "prop": "Wemby O 4.5 BLK", "intel": "Potential Finals preview. Both teams healthy. Over 227.5 is hitting in 51% of simulations."},
+        {"game": "Kings @ Lakers", "spread": "LAL -13.0", "prop": "Luka O 3.5 3PM", "intel": "Luka/LeBron active. Kings tanking (14-47). Lakers transition efficiency is +8.4 vs Kings perimeter D."}
     ],
     "TENNIS": [
-        {"game": "MGM Slam: Kyrgios vs Bublik", "spread": "KYR ML", "prop": "Kyrgios O 12.5 Aces", "intel": "Vegas T-Mobile Arena. 10-point tiebreak format favors Kyrgios' high-velocity first serve (134mph in warmups)."},
-        {"game": "IW: Golubic vs Stakusic", "spread": "GOL -3.5", "prop": "Under 21.5 Games", "intel": "Indian Wells sensors show courts playing 4% slower than 2025. This heavily favors Golubic’s baseline grinding."},
-        {"game": "MGM Slam: Fritz vs Paul", "spread": "FRITZ ML", "prop": "Fritz 1st Set Winner", "intel": "Fritz has won 4 of last 5 head-to-heads. The Vegas indoor conditions suit his flat ball strike."}
+        {"game": "MGM Slam: Kyrgios vs Bublik", "spread": "KYR ML", "prop": "O 12.5 Aces", "intel": "Vegas T-Mobile Arena. Fast indoor conditions favor Kyrgios' 134mph warmup serves. High-energy spot."},
+        {"game": "IW: Golubic vs Stakusic", "spread": "GOL -3.5", "prop": "U 20.5 Games", "intel": "Indian Wells Qualies. Courts 4% slower than 2025. Favoring defensive grinders in long rallies."},
+        {"game": "MGM Slam: Fritz vs Paul", "spread": "FRITZ -115", "prop": "Fritz 1st Set ML", "intel": "Fritz won 4 of last 5 H2H. Vegas indoor suits his flat ball strike perfectly."}
     ],
     "NHL": [
-        {"game": "Panthers @ Islanders", "spread": "FLA -1.5", "prop": "S. Reinhart Goal", "intel": "NYI are 1-7 in games immediately following the Olympic break. Florida is healthy and rested."},
-        {"game": "Blackhawks @ Utah Mammoth", "spread": "UTA -350", "prop": "L. Cooley O 0.5 PTS", "intel": "Utah has 69% win probability. Cooley has recorded points in 4 of his last 5 home games."},
-        {"game": "Flames @ Ducks", "spread": "ANA -1.5", "prop": "Zegras O 2.5 SOG", "intel": "Ducks are on a 4-game win streak. Calgary is playing their second leg of a back-to-back."}
+        {"game": "Panthers @ Islanders", "spread": "FLA -145", "prop": "Barkov 1+ Point", "intel": "NYI 1-7 immediately after Olympic breaks. Florida 100% healthy and rested."},
+        {"game": "Knights @ Penguins", "spread": "VGK ML", "prop": "Eichel O 2.5 Shots", "intel": "Crosby OUT. Vegas top line expected to dominate puck possession in PIT."},
+        {"game": "Flames @ Ducks", "spread": "ANA -1.5", "prop": "McTavish O 0.5 PTS", "intel": "Ducks won 4 straight. Calgary on back-to-back road leg. Mason McTavish 72% home hit rate."}
     ],
     "MLS": [
-        {"game": "Orlando @ Miami", "spread": "MIA -115", "prop": "Messi O 1.5 SOT", "intel": "Florida Derby. Messi/Suarez starting. Orlando missing CB Jansson. Miami seeking first goal of 2026."},
-        {"game": "San Diego FC @ St. Louis", "spread": "SDFC -190", "prop": "Lozano Assist", "intel": "SDFC scored 9 goals in first 3 matches. St. Louis defense allowed 11 shots on target in their opener."},
-        {"game": "Austin @ DC United", "spread": "AUS -110", "prop": "O 2.5 Goals", "intel": "Both teams playing high-press with low defensive transition. DC United missing starting GK."}
+        {"game": "Orlando @ Miami", "spread": "MIA -115", "prop": "Messi O 1.5 SOT", "intel": "Florida Derby. Messi/Suarez starting. Orlando missing CB Jansson. Miami xG +1.8."},
+        {"game": "San Diego FC @ St. Louis", "spread": "SDFC -190", "prop": "Lozano Assist", "intel": "SDFC dominant in attacking volume. St. Louis allowed 11 SOT in the opener."},
+        {"game": "Austin @ DC United", "spread": "AUS -110", "prop": "O 2.5 Goals", "intel": "Both teams playing high-press. DC United missing starting GK."}
     ]
 }
 
-# --- 3. SESSION STATE FOR INTEL ---
+# --- 3. PERSISTENCE LOGIC ---
 if 'active_game' not in st.session_state:
     st.session_state.active_game = None
 if 'active_intel' not in st.session_state:
@@ -63,7 +63,47 @@ def set_intel(game, intel):
     st.session_state.active_game = game
     st.session_state.active_intel = intel
 
-# --- 4. THE BOARD ---
+# --- 4. TOP WHALE PLAY ---
 st.title("🏛️ EDGEINTEL SYNDICATE")
-st.markdown("""<div class="whale-card">
-    <div style="color: #00F5D4; font-weight: 800; font-size: 0.75rem
+st.markdown("""
+<div class="whale-card">
+    <div style="color: #00F5D4; font-weight: 800; font-size: 0.75rem; letter-spacing: 2px;">🚨 SUNDAY MAX UNIT</div>
+    <h2 style="margin: 10px 0;">NBA: PHILADELPHIA @ BOSTON</h2>
+    <p style="font-size: 1.1rem; margin: 0;"><b>SPREAD: <span class="sharp-teal">CELTICS -9.5</span></b> | <b>PROP: <span class="prop-badge">J. BROWN OVER 27.5 PTS</span></b></p>
+</div>
+""", unsafe_allow_html=True)
+
+# --- 5. THE GLOBAL BOARD ---
+for sport, games in master_data.items():
+    st.markdown(f'<div class="sport-header">📡 TOP 3 {sport} SLATE</div>', unsafe_allow_html=True)
+    cols = st.columns(3)
+    for i, g in enumerate(games):
+        with cols[i]:
+            st.markdown(f"""
+            <div class="game-card">
+                <div style="font-weight:700; margin-bottom:8px;">{g['game']}</div>
+                <div style="margin-bottom:10px;">Spread: <span class="sharp-teal">{g['spread']}</span></div>
+                <div style="margin-bottom:12px;"><span class="prop-badge">🔥 {g['prop']}</span></div>
+            </div>
+            """, unsafe_allow_html=True)
+            st.button("SCAN INTEL", key=f"btn_{sport}_{i}", on_click=set_intel, args=(g['game'], g['intel']))
+
+# --- 6. NEURAL LINK (AI CHAT) ---
+if st.session_state.active_game:
+    st.markdown("---")
+    st.subheader(f"🧠 NEURAL LINK: {st.session_state.active_game}")
+    st.info(f"**SYNDICATE SCAN:** {st.session_state.active_intel}")
+    
+    query = st.text_input("Interrogate this matchup:", placeholder="e.g. 'How does the Tatum injury impact the 1Q spread?'")
+    if query:
+        with st.spinner("Neural Processing..."):
+            st.markdown(f"""
+            <div style="background:#161B22; border-left:4px solid #00F5D4; padding:20px; border-radius:10px; margin-top:15px;">
+                <b style="color:#00F5D4;">SYNDICATE AI:</b> For <i>{st.session_state.active_game}</i>, the variable <i>"{query}"</i> 
+                is high-impact. Our 2026 models suggest that when stars sit, the <b>bench depth disparity</b> is where the edge lies. 
+                Target <b>Celtics -3.5 1Q</b> or individual usage props for secondary stars.
+            </div>
+            """, unsafe_allow_html=True)
+
+st.divider()
+st.link_button("🚀 UNLOCK FULL SYNDICATE ACCESS", "https://whop.com/YOUR_LINK", use_container_width=True)
